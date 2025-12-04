@@ -9,7 +9,8 @@ export interface Coupon {
   isRedeemed: boolean;
   redemptionCode?: string;
   qrCodeUrl?: string;
-  category: 'discount' | 'gift' | 'special' | 'partner';
+  redeemedAt?: string;
+  category: 'discount' | 'gift' | 'special' | 'partner' | 'service' | 'bonus' | 'exclusive';
 }
 
 export interface RedeemCouponRequest {

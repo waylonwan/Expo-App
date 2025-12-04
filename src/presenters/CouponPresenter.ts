@@ -97,6 +97,9 @@ export class CouponPresenter {
       gift: 'Gift',
       special: 'Special',
       partner: 'Partner',
+      service: 'Service',
+      bonus: 'Bonus',
+      exclusive: 'Exclusive',
     };
     return labels[category];
   }
@@ -107,6 +110,9 @@ export class CouponPresenter {
       gift: '#8B5CF6',
       special: '#F59E0B',
       partner: '#10B981',
+      service: '#6366F1',
+      bonus: '#EC4899',
+      exclusive: '#F97316',
     };
     return colors[category];
   }

@@ -135,8 +135,22 @@ npx expo start --web
 - Theme follows system preference (light/dark)
 - Push notification permission handled on first launch
 
+## Demo Account
+
+For testing the app without a backend, use:
+- **Email**: `demo@baleno.com`
+- **Password**: `demo1234`
+
+This demo account provides:
+- Mock member profile (陳小明, Gold tier)
+- 2,580 current points with 500 expiring
+- 10 sample transactions
+- 5 available coupons to redeem
+- 2 previously redeemed coupons
+
 ## Recent Changes
 
+- Added demo login functionality with mock data
 - Refactored all tab screens to properly follow MVP architecture
 - Views now delegate all business logic and formatting to presenters
 - Added formatBalance method to PointsPresenter for balance display

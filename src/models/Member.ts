@@ -5,6 +5,7 @@ export interface Member {
   phone?: string;
   membershipTier: 'standard' | 'silver' | 'gold' | 'platinum';
   joinDate: string;
+  birthDate?: string;
   avatarUrl?: string;
 }
 

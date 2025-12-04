@@ -12,7 +12,7 @@ export interface Transaction {
   description: string;
   points: number;
   storeLocation?: string;
-  receiptNumber?: string;
+  orderId?: string;
   amount?: number;
 }
 

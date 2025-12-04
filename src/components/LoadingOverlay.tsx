@@ -15,7 +15,7 @@ export function LoadingOverlay({ visible, message }: LoadingOverlayProps) {
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.container}>
         <View style={styles.content}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" color="#E31837" />
           <ThemedText style={styles.text}>
             {message || t('common.loading')}
           </ThemedText>

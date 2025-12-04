@@ -134,7 +134,7 @@ export default function PointsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#E31837" colors={['#E31837']} />
         }
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   balanceValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#3B82F6',
+    color: '#E31837',
   },
   sectionTitle: {
     fontSize: 18,

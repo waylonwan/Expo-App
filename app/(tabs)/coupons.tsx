@@ -165,7 +165,7 @@ export default function CouponsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#E31837" colors={['#E31837']} />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   tabTextActive: {
-    color: '#3B82F6',
+    color: '#E31837',
   },
   listContent: {
     paddingHorizontal: 16,
@@ -329,13 +329,13 @@ const styles = StyleSheet.create({
   showCodeButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#FEE2E2',
     borderRadius: 6,
   },
   showCodeText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#3B82F6',
+    color: '#E31837',
   },
   emptyContainer: {
     alignItems: 'center',

@@ -63,7 +63,12 @@ export default function HomeScreen() {
       style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        <RefreshControl 
+          refreshing={isRefreshing} 
+          onRefresh={handleRefresh}
+          tintColor="#E31837"
+          colors={['#E31837']}
+        />
       }
     >
       <View style={styles.header}>
@@ -104,8 +109,8 @@ export default function HomeScreen() {
           style={styles.actionCard}
           onPress={() => router.push('/(tabs)/points' as any)}
         >
-          <View style={[styles.actionIcon, { backgroundColor: '#EFF6FF' }]}>
-            <Ionicons name="receipt-outline" size={28} color="#3B82F6" />
+          <View style={[styles.actionIcon, { backgroundColor: '#FEE2E2' }]}>
+            <Ionicons name="receipt-outline" size={28} color="#E31837" />
           </View>
           <ThemedText style={styles.actionText}>{t('home.viewHistory')}</ThemedText>
         </TouchableOpacity>
@@ -290,7 +295,7 @@ const styles = StyleSheet.create({
   lifetimeValue: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: '#E31837',
   },
   errorText: {
     color: '#EF4444',

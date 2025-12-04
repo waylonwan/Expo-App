@@ -55,7 +55,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator 
           size="small" 
-          color={variant === 'outline' ? '#3B82F6' : '#FFFFFF'} 
+          color={variant === 'outline' ? '#E31837' : '#FFFFFF'} 
         />
       ) : (
         <Text style={textStyles}>{title}</Text>
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   primary: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#E31837',
   },
   secondary: {
     backgroundColor: '#6B7280',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    borderColor: '#E31837',
   },
   danger: {
     backgroundColor: '#EF4444',
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   outlineText: {
-    color: '#3B82F6',
+    color: '#E31837',
   },
   dangerText: {
     color: '#FFFFFF',

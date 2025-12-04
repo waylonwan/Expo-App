@@ -15,7 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#3B82F6"
+        "backgroundColor": "#E31837"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.baleno.membership"
@@ -33,7 +33,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#3B82F6"
+          "backgroundColor": "#E31837"
         }
       ],
       "expo-localization",
@@ -41,7 +41,7 @@
         "expo-notifications",
         {
           "icon": "./assets/images/icon.png",
-          "color": "#3B82F6"
+          "color": "#E31837"
         }
       ],
       "expo-secure-store"

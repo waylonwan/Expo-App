@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/ThemedText';
@@ -67,7 +67,13 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <ThemedText type="title" style={styles.title}>Baleno</ThemedText>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('@/assets/images/baleno-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
           <ThemedText style={styles.subtitle}>{t('auth.register')}</ThemedText>
         </View>
 
@@ -155,11 +161,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 32,
   },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#3B82F6',
-    marginBottom: 8,
+  logoContainer: {
+    width: 180,
+    height: 60,
+    marginBottom: 16,
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
   },
   subtitle: {
     fontSize: 18,
@@ -184,7 +193,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   linkText: {
-    color: '#3B82F6',
+    color: '#E31837',
     fontWeight: '600',
   },
 });

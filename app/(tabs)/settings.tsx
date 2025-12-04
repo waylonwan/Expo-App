@@ -136,8 +136,8 @@ export default function SettingsScreen() {
           <Switch
             value={notificationsEnabled}
             onValueChange={handleNotificationToggle}
-            trackColor={{ false: '#D1D5DB', true: '#93C5FD' }}
-            thumbColor={notificationsEnabled ? '#3B82F6' : '#F3F4F6'}
+            trackColor={{ false: '#D1D5DB', true: '#FECACA' }}
+            thumbColor={notificationsEnabled ? '#E31837' : '#F3F4F6'}
           />
         )}
       </Card>
@@ -217,7 +217,7 @@ export default function SettingsScreen() {
                   {getLanguageLabel(lang)}
                 </ThemedText>
                 {displayLanguage === lang && (
-                  <Ionicons name="checkmark" size={24} color="#3B82F6" />
+                  <Ionicons name="checkmark" size={24} color="#E31837" />
                 )}
               </TouchableOpacity>
             ))}
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#E31837',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E7EB',
   },
   languageOptionActive: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#FEE2E2',
     marginHorizontal: -24,
     paddingHorizontal: 24,
   },
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     color: '#374151',
   },
   languageTextActive: {
-    color: '#3B82F6',
+    color: '#E31837',
     fontWeight: '600',
   },
 });

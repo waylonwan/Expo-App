@@ -87,6 +87,10 @@ export class PointsPresenter {
     }
   }
 
+  formatBalance(points: number): string {
+    return points.toLocaleString();
+  }
+
   formatPoints(points: number): string {
     const sign = points >= 0 ? '+' : '';
     return `${sign}${points.toLocaleString()}`;

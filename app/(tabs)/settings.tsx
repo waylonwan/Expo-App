@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -6,67 +6,63 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { Card, Button, LoadingOverlay } from '@/src/components';
 import { useAuth, useLanguage } from '@/src/contexts';
-import { notificationService } from '@/src/services';
+import { SettingsPresenter, SettingsViewCallbacks } from '@/src/presenters';
 import { SupportedLanguage } from '@/src/localization';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const { member, logout } = useAuth();
-  const { currentLanguage, changeLanguage, supportedLanguages } = useLanguage();
+  const { currentLanguage, supportedLanguages } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [displayLanguage, setDisplayLanguage] = useState<SupportedLanguage>(currentLanguage);
+
+  const callbacks: SettingsViewCallbacks = useMemo(() => ({
+    showLoading: () => setIsLoading(true),
+    hideLoading: () => setIsLoading(false),
+    showError: (message: string) => {
+      Alert.alert(t('common.error'), t(message) || message);
+    },
+    onLanguageChanged: (language: SupportedLanguage) => {
+      setDisplayLanguage(language);
+      setShowLanguageModal(false);
+    },
+    onNotificationToggled: (enabled: boolean) => {
+      setNotificationsEnabled(enabled);
+    },
+    onLogoutSuccess: () => {
+      router.replace('/(auth)/login' as any);
+    },
+    showLogoutConfirmation: () => {
+      Alert.alert(
+        t('auth.logout'),
+        t('auth.logoutConfirm'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('auth.logout'),
+            style: 'destructive',
+            onPress: () => presenter.confirmLogout(),
+          },
+        ]
+      );
+    },
+  }), [t]);
+
+  const presenter = useMemo(() => new SettingsPresenter(callbacks), [callbacks]);
 
   const handleLogout = useCallback(() => {
-    Alert.alert(
-      t('auth.logout'),
-      t('auth.logoutConfirm'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('auth.logout'),
-          style: 'destructive',
-          onPress: async () => {
-            setIsLoading(true);
-            try {
-              await logout();
-              router.replace('/(auth)/login');
-            } catch (error) {
-              console.error('Logout error:', error);
-            } finally {
-              setIsLoading(false);
-            }
-          },
-        },
-      ]
-    );
-  }, [logout, t]);
+    presenter.onLogoutTapped();
+  }, [presenter]);
 
   const handleLanguageChange = useCallback(async (language: SupportedLanguage) => {
-    setIsLoading(true);
-    try {
-      await changeLanguage(language);
-      setShowLanguageModal(false);
-    } catch (error) {
-      Alert.alert(t('common.error'), t('errors.unknownError'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [changeLanguage, t]);
+    await presenter.onChangeLanguage(language);
+  }, [presenter]);
 
   const handleNotificationToggle = useCallback(async (enabled: boolean) => {
-    if (enabled) {
-      const hasPermission = await notificationService.requestPermissions();
-      if (hasPermission) {
-        setNotificationsEnabled(true);
-      } else {
-        Alert.alert(t('common.error'), t('settings.notificationsDisabled'));
-        setNotificationsEnabled(false);
-      }
-    } else {
-      setNotificationsEnabled(false);
-    }
-  }, [t]);
+    await presenter.onToggleNotifications(enabled);
+  }, [presenter]);
 
   const getLanguageLabel = (lang: SupportedLanguage) => {
     return t(`languages.${lang}`);
@@ -126,7 +122,7 @@ export default function SettingsScreen() {
         {renderSettingRow(
           'language-outline',
           t('settings.language'),
-          getLanguageLabel(currentLanguage),
+          getLanguageLabel(displayLanguage),
           () => setShowLanguageModal(true)
         )}
         
@@ -210,17 +206,17 @@ export default function SettingsScreen() {
                 key={lang}
                 style={[
                   styles.languageOption,
-                  currentLanguage === lang && styles.languageOptionActive,
+                  displayLanguage === lang && styles.languageOptionActive,
                 ]}
                 onPress={() => handleLanguageChange(lang)}
               >
                 <ThemedText style={[
                   styles.languageText,
-                  currentLanguage === lang && styles.languageTextActive,
+                  displayLanguage === lang && styles.languageTextActive,
                 ]}>
                   {getLanguageLabel(lang)}
                 </ThemedText>
-                {currentLanguage === lang && (
+                {displayLanguage === lang && (
                   <Ionicons name="checkmark" size={24} color="#3B82F6" />
                 )}
               </TouchableOpacity>

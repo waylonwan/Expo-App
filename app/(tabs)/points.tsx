@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { Card, LoadingOverlay } from '@/src/components';
-import { pointsService } from '@/src/services';
+import { PointsPresenter, PointsViewCallbacks } from '@/src/presenters';
 import { PointsBalance, Transaction } from '@/src/models';
 
 export default function PointsScreen() {
@@ -13,89 +13,43 @@ export default function PointsScreen() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const loadData = useCallback(async (refresh = false) => {
-    try {
-      if (refresh) {
-        setPage(1);
-      }
-
-      const [balanceResponse, transactionsResponse] = await Promise.all([
-        pointsService.getPointsBalance(),
-        pointsService.getTransactionHistory({ page: refresh ? 1 : page, pageSize: 20 }),
-      ]);
-
-      if (balanceResponse.success && balanceResponse.data) {
-        setPointsBalance(balanceResponse.data);
-      }
-
-      if (transactionsResponse.success && transactionsResponse.data) {
-        const newTransactions = transactionsResponse.data.transactions;
-        if (refresh) {
-          setTransactions(newTransactions);
-        } else {
-          setTransactions(prev => [...prev, ...newTransactions]);
-        }
-        setHasMore(newTransactions.length === 20);
-      }
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
+  const callbacks: PointsViewCallbacks = useMemo(() => ({
+    showLoading: () => setIsLoading(true),
+    hideLoading: () => {
       setIsLoading(false);
       setIsRefreshing(false);
-    }
-  }, [page]);
+    },
+    showError: (message: string) => setError(t(message) || message),
+    renderBalance: (balance: PointsBalance) => setPointsBalance(balance),
+    renderTransactions: (txns: Transaction[], hasMorePages: boolean) => {
+      setTransactions(txns);
+      setHasMore(hasMorePages);
+    },
+    appendTransactions: (txns: Transaction[], hasMorePages: boolean) => {
+      setTransactions(prev => [...prev, ...txns]);
+      setHasMore(hasMorePages);
+    },
+  }), [t]);
+
+  const presenter = useMemo(() => new PointsPresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    loadData(true);
-  }, []);
+    presenter.refresh();
+  }, [presenter]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    loadData(true);
-  }, [loadData]);
+    presenter.refresh();
+  }, [presenter]);
 
   const handleLoadMore = useCallback(() => {
     if (hasMore && !isLoading) {
-      setPage(prev => prev + 1);
-      loadData(false);
+      presenter.loadMore();
     }
-  }, [hasMore, isLoading, loadData]);
-
-  const formatPoints = (points: number) => {
-    const sign = points >= 0 ? '+' : '';
-    return `${sign}${points.toLocaleString()}`;
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const getTransactionTypeLabel = (type: Transaction['type']) => {
-    const labels: Record<Transaction['type'], string> = {
-      earn: t('points.earn'),
-      redeem: t('points.redeem'),
-      expire: t('points.expire'),
-      adjust: t('points.adjust'),
-    };
-    return labels[type];
-  };
-
-  const getTransactionColor = (type: Transaction['type']) => {
-    const colors: Record<Transaction['type'], string> = {
-      earn: '#22C55E',
-      redeem: '#F97316',
-      expire: '#EF4444',
-      adjust: '#6B7280',
-    };
-    return colors[type];
-  };
+  }, [hasMore, isLoading, presenter]);
 
   const getTransactionIcon = (type: Transaction['type']) => {
     const icons: Record<Transaction['type'], string> = {
@@ -110,11 +64,11 @@ export default function PointsScreen() {
   const renderTransaction = ({ item }: { item: Transaction }) => (
     <Card style={styles.transactionCard} variant="outlined">
       <View style={styles.transactionHeader}>
-        <View style={[styles.iconContainer, { backgroundColor: `${getTransactionColor(item.type)}20` }]}>
+        <View style={[styles.iconContainer, { backgroundColor: `${presenter.getTransactionColor(item.type)}20` }]}>
           <Ionicons 
             name={getTransactionIcon(item.type)} 
             size={20} 
-            color={getTransactionColor(item.type)} 
+            color={presenter.getTransactionColor(item.type)} 
           />
         </View>
         <View style={styles.transactionInfo}>
@@ -122,7 +76,7 @@ export default function PointsScreen() {
             {item.description}
           </ThemedText>
           <ThemedText style={styles.transactionDate}>
-            {formatDate(item.date)}
+            {presenter.formatDate(item.date)}
           </ThemedText>
           {item.storeLocation && (
             <ThemedText style={styles.transactionLocation}>
@@ -131,11 +85,11 @@ export default function PointsScreen() {
           )}
         </View>
         <View style={styles.transactionPoints}>
-          <ThemedText style={[styles.pointsAmount, { color: getTransactionColor(item.type) }]}>
-            {formatPoints(item.points)}
+          <ThemedText style={[styles.pointsAmount, { color: presenter.getTransactionColor(item.type) }]}>
+            {presenter.formatPoints(item.points)}
           </ThemedText>
-          <ThemedText style={[styles.typeLabel, { color: getTransactionColor(item.type) }]}>
-            {getTransactionTypeLabel(item.type)}
+          <ThemedText style={[styles.typeLabel, { color: presenter.getTransactionColor(item.type) }]}>
+            {t(presenter.getTransactionTypeKey(item.type))}
           </ThemedText>
         </View>
       </View>
@@ -158,14 +112,14 @@ export default function PointsScreen() {
             <View style={styles.balanceItem}>
               <ThemedText style={styles.balanceLabel}>{t('home.currentPoints')}</ThemedText>
               <ThemedText style={styles.balanceValue}>
-                {pointsBalance.currentPoints.toLocaleString()}
+                {presenter.formatBalance(pointsBalance.currentPoints)}
               </ThemedText>
             </View>
             <View style={styles.balanceDivider} />
             <View style={styles.balanceItem}>
               <ThemedText style={styles.balanceLabel}>{t('points.lifetimePoints')}</ThemedText>
               <ThemedText style={styles.balanceValue}>
-                {pointsBalance.lifetimePoints.toLocaleString()}
+                {presenter.formatBalance(pointsBalance.lifetimePoints)}
               </ThemedText>
             </View>
           </View>
@@ -191,6 +145,10 @@ export default function PointsScreen() {
           </View>
         }
       />
+
+      {error && (
+        <ThemedText style={styles.errorText}>{error}</ThemedText>
+      )}
     </View>
   );
 }
@@ -302,5 +260,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 16,
     color: '#6B7280',
+  },
+  errorText: {
+    color: '#EF4444',
+    textAlign: 'center',
+    marginTop: 16,
   },
 });

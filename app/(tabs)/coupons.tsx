@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Alert, Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { Card, Button, LoadingOverlay } from '@/src/components';
 import { useAuth } from '@/src/contexts';
-import { couponService } from '@/src/services';
+import { CouponPresenter, CouponViewCallbacks } from '@/src/presenters';
 import { Coupon, RedeemCouponResponse } from '@/src/models';
 
 export default function CouponsScreen() {
@@ -18,99 +18,76 @@ export default function CouponsScreen() {
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [redemptionResult, setRedemptionResult] = useState<RedeemCouponResponse | null>(null);
   const [showRedemptionModal, setShowRedemptionModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const loadCoupons = useCallback(async () => {
-    try {
-      const response = selectedTab === 'available' 
-        ? await couponService.getAvailableCoupons()
-        : await couponService.getRedeemedCoupons();
-
-      if (response.success && response.data) {
-        setCoupons(response.data.coupons);
-      }
-    } catch (error) {
-      console.error('Error loading coupons:', error);
-    } finally {
+  const callbacks: CouponViewCallbacks = useMemo(() => ({
+    showLoading: () => setIsLoading(true),
+    hideLoading: () => {
       setIsLoading(false);
       setIsRefreshing(false);
-    }
-  }, [selectedTab]);
+    },
+    showError: (message: string) => {
+      setError(t(message) || message);
+      Alert.alert(t('common.error'), t(message) || message);
+    },
+    renderCoupons: (couponList: Coupon[]) => setCoupons(couponList),
+    showRedeemSuccess: (response: RedeemCouponResponse) => {
+      setRedemptionResult(response);
+      setShowRedemptionModal(true);
+    },
+    showRedeemConfirmation: (coupon: Coupon) => {
+      Alert.alert(
+        t('coupons.confirmRedeem'),
+        t('coupons.confirmRedeemMessage', { points: coupon.pointsCost.toLocaleString() }),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.confirm'),
+            onPress: () => {
+              if (member) {
+                presenter.confirmRedeem(member.id, coupon);
+              }
+            },
+          },
+        ]
+      );
+    },
+  }), [t, member]);
+
+  const presenter = useMemo(() => new CouponPresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    setIsLoading(true);
-    loadCoupons();
-  }, [selectedTab, loadCoupons]);
+    if (selectedTab === 'available') {
+      presenter.loadAvailableCoupons();
+    } else {
+      presenter.loadRedeemedCoupons();
+    }
+  }, [selectedTab, presenter]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    loadCoupons();
-  }, [loadCoupons]);
+    if (selectedTab === 'available') {
+      presenter.loadAvailableCoupons();
+    } else {
+      presenter.loadRedeemedCoupons();
+    }
+  }, [selectedTab, presenter]);
 
   const handleRedeemPress = useCallback((coupon: Coupon) => {
-    Alert.alert(
-      t('coupons.confirmRedeem'),
-      t('coupons.confirmRedeemMessage', { points: coupon.pointsCost.toLocaleString() }),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.confirm'),
-          onPress: async () => {
-            if (!member) return;
-
-            setIsLoading(true);
-            try {
-              const response = await couponService.redeemCoupon({
-                memberId: member.id,
-                couponId: coupon.id,
-              });
-
-              if (response.success && response.data) {
-                setRedemptionResult(response.data);
-                setSelectedCoupon(coupon);
-                setShowRedemptionModal(true);
-                loadCoupons();
-              } else {
-                Alert.alert(t('common.error'), response.error?.message || t('coupons.redeemFailed'));
-              }
-            } catch (error) {
-              Alert.alert(t('common.error'), t('coupons.redeemFailed'));
-            } finally {
-              setIsLoading(false);
-            }
-          },
-        },
-      ]
-    );
-  }, [member, t, loadCoupons]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const getCategoryColor = (category: Coupon['category']) => {
-    const colors: Record<Coupon['category'], string> = {
-      discount: '#3B82F6',
-      gift: '#8B5CF6',
-      special: '#F59E0B',
-      partner: '#10B981',
-    };
-    return colors[category];
-  };
+    setSelectedCoupon(coupon);
+    presenter.onRedeemTapped(coupon);
+  }, [presenter]);
 
   const renderCoupon = ({ item }: { item: Coupon }) => (
     <Card style={styles.couponCard} variant="elevated">
       <View style={styles.couponHeader}>
-        <View style={[styles.categoryBadge, { backgroundColor: `${getCategoryColor(item.category)}20` }]}>
-          <ThemedText style={[styles.categoryText, { color: getCategoryColor(item.category) }]}>
-            {item.category.toUpperCase()}
+        <View style={[styles.categoryBadge, { backgroundColor: `${presenter.getCategoryColor(item.category)}20` }]}>
+          <ThemedText style={[styles.categoryText, { color: presenter.getCategoryColor(item.category) }]}>
+            {presenter.getCategoryLabel(item.category).toUpperCase()}
           </ThemedText>
         </View>
         <ThemedText style={styles.expiryDate}>
-          {t('coupons.expiryDate')}: {formatDate(item.expiryDate)}
+          {t('coupons.expiryDate')}: {presenter.formatExpiryDate(item.expiryDate)}
         </ThemedText>
       </View>
 
@@ -121,7 +98,7 @@ export default function CouponsScreen() {
         <View style={styles.pointsCost}>
           <Ionicons name="star" size={16} color="#F59E0B" />
           <ThemedText style={styles.pointsText}>
-            {item.pointsCost.toLocaleString()} {t('coupons.pointsCost')}
+            {presenter.formatPointsCost(item.pointsCost)} {t('coupons.pointsCost')}
           </ThemedText>
         </View>
 

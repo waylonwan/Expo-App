@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -6,44 +6,43 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { Card, LoadingOverlay } from '@/src/components';
 import { useAuth } from '@/src/contexts';
-import { pointsService } from '@/src/services';
-import { PointsBalance } from '@/src/models';
+import { HomePresenter, HomeViewCallbacks } from '@/src/presenters';
+import { PointsBalance, Member } from '@/src/models';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
   const { member } = useAuth();
   const [pointsBalance, setPointsBalance] = useState<PointsBalance | null>(null);
+  const [displayedMember, setDisplayedMember] = useState<Member | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const loadData = useCallback(async () => {
-    try {
-      const response = await pointsService.getPointsBalance();
-      if (response.success && response.data) {
-        setPointsBalance(response.data);
-      }
-    } catch (error) {
-      console.error('Error loading points:', error);
-    } finally {
+  const callbacks: HomeViewCallbacks = useMemo(() => ({
+    showLoading: () => setIsLoading(true),
+    hideLoading: () => {
       setIsLoading(false);
       setIsRefreshing(false);
-    }
-  }, []);
+    },
+    showError: (message: string) => setError(t(message) || message),
+    renderPoints: (balance: PointsBalance) => setPointsBalance(balance),
+    renderMember: (member: Member) => setDisplayedMember(member),
+  }), [t]);
+
+  const presenter = useMemo(() => new HomePresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (member) {
+      presenter.loadHomeData(member);
+    }
+  }, [member, presenter]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    loadData();
-  }, [loadData]);
-
-  const formatPoints = (points: number) => points.toLocaleString();
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+    if (member) {
+      presenter.loadHomeData(member);
+    }
+  }, [member, presenter]);
 
   const getTierColor = (tier: string) => {
     const colors: Record<string, string> = {
@@ -55,7 +54,7 @@ export default function HomeScreen() {
     return colors[tier] || '#6B7280';
   };
 
-  if (isLoading) {
+  if (isLoading && !pointsBalance) {
     return <LoadingOverlay visible={true} />;
   }
 
@@ -69,12 +68,12 @@ export default function HomeScreen() {
     >
       <View style={styles.header}>
         <ThemedText type="title" style={styles.welcomeText}>
-          {t('home.welcome')}, {member?.name || 'Member'}
+          {t('home.welcome')}, {displayedMember?.name || member?.name || 'Member'}
         </ThemedText>
-        {member && (
-          <View style={[styles.tierBadge, { backgroundColor: getTierColor(member.membershipTier) }]}>
+        {displayedMember && (
+          <View style={[styles.tierBadge, { backgroundColor: getTierColor(displayedMember.membershipTier) }]}>
             <ThemedText style={styles.tierText}>
-              {member.membershipTier.toUpperCase()}
+              {presenter.getMemberTierLabel(displayedMember.membershipTier)}
             </ThemedText>
           </View>
         )}
@@ -86,15 +85,15 @@ export default function HomeScreen() {
           <ThemedText style={styles.pointsLabel}>{t('home.currentPoints')}</ThemedText>
         </View>
         <ThemedText style={styles.pointsValue}>
-          {formatPoints(pointsBalance?.currentPoints || 0)}
+          {presenter.formatPoints(pointsBalance?.currentPoints || 0)}
         </ThemedText>
         
         {pointsBalance && pointsBalance.expiringPoints > 0 && (
           <View style={styles.expiringSection}>
             <Ionicons name="time-outline" size={16} color="#EF4444" />
             <ThemedText style={styles.expiringText}>
-              {formatPoints(pointsBalance.expiringPoints)} {t('home.expiringPoints')}
-              {pointsBalance.expiryDate && ` - ${formatDate(pointsBalance.expiryDate)}`}
+              {presenter.formatPoints(pointsBalance.expiringPoints)} {t('home.expiringPoints')}
+              {pointsBalance.expiryDate && ` - ${presenter.formatDate(pointsBalance.expiryDate)}`}
             </ThemedText>
           </View>
         )}
@@ -103,7 +102,7 @@ export default function HomeScreen() {
       <View style={styles.quickActions}>
         <TouchableOpacity 
           style={styles.actionCard}
-          onPress={() => router.push('/(tabs)/points')}
+          onPress={() => router.push('/(tabs)/points' as any)}
         >
           <View style={[styles.actionIcon, { backgroundColor: '#EFF6FF' }]}>
             <Ionicons name="receipt-outline" size={28} color="#3B82F6" />
@@ -113,7 +112,7 @@ export default function HomeScreen() {
 
         <TouchableOpacity 
           style={styles.actionCard}
-          onPress={() => router.push('/(tabs)/coupons')}
+          onPress={() => router.push('/(tabs)/coupons' as any)}
         >
           <View style={[styles.actionIcon, { backgroundColor: '#FEF3C7' }]}>
             <Ionicons name="gift-outline" size={28} color="#F59E0B" />
@@ -122,35 +121,39 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {member && (
+      {displayedMember && (
         <Card style={styles.memberCard}>
           <View style={styles.memberInfo}>
             <View style={styles.memberRow}>
               <Ionicons name="person-outline" size={20} color="#6B7280" />
               <ThemedText style={styles.memberLabel}>{t('auth.email')}</ThemedText>
-              <ThemedText style={styles.memberValue}>{member.email}</ThemedText>
+              <ThemedText style={styles.memberValue}>{displayedMember.email}</ThemedText>
             </View>
-            {member.phone && (
+            {displayedMember.phone && (
               <View style={styles.memberRow}>
                 <Ionicons name="call-outline" size={20} color="#6B7280" />
                 <ThemedText style={styles.memberLabel}>{t('auth.phone')}</ThemedText>
-                <ThemedText style={styles.memberValue}>{member.phone}</ThemedText>
+                <ThemedText style={styles.memberValue}>{displayedMember.phone}</ThemedText>
               </View>
             )}
             <View style={styles.memberRow}>
               <Ionicons name="calendar-outline" size={20} color="#6B7280" />
               <ThemedText style={styles.memberLabel}>{t('home.memberSince')}</ThemedText>
-              <ThemedText style={styles.memberValue}>{formatDate(member.joinDate)}</ThemedText>
+              <ThemedText style={styles.memberValue}>{presenter.formatDate(displayedMember.joinDate)}</ThemedText>
             </View>
           </View>
           
           <View style={styles.lifetimePoints}>
             <ThemedText style={styles.lifetimeLabel}>{t('points.lifetimePoints')}</ThemedText>
             <ThemedText style={styles.lifetimeValue}>
-              {formatPoints(pointsBalance?.lifetimePoints || 0)}
+              {presenter.formatPoints(pointsBalance?.lifetimePoints || 0)}
             </ThemedText>
           </View>
         </Card>
+      )}
+
+      {error && (
+        <ThemedText style={styles.errorText}>{error}</ThemedText>
       )}
     </ScrollView>
   );
@@ -288,5 +291,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#3B82F6',
+  },
+  errorText: {
+    color: '#EF4444',
+    textAlign: 'center',
+    marginTop: 16,
   },
 });

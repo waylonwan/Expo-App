@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { ApiResponse, RequestConfig } from '../types/api';
 
 const AUTH_TOKEN_KEY = 'baleno_auth_token';
@@ -20,26 +21,37 @@ class ApiClient {
 
   async getAuthToken(): Promise<string | null> {
     try {
+      if (Platform.OS === 'web') {
+        return localStorage.getItem(AUTH_TOKEN_KEY);
+      }
       return await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
     } catch (error) {
-      console.error('Error getting auth token:', error);
+      console.warn('Error getting auth token:', error);
       return null;
     }
   }
 
   async setAuthToken(token: string): Promise<void> {
     try {
+      if (Platform.OS === 'web') {
+        localStorage.setItem(AUTH_TOKEN_KEY, token);
+        return;
+      }
       await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
     } catch (error) {
-      console.error('Error setting auth token:', error);
+      console.warn('Error setting auth token:', error);
     }
   }
 
   async clearAuthToken(): Promise<void> {
     try {
+      if (Platform.OS === 'web') {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        return;
+      }
       await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
     } catch (error) {
-      console.error('Error clearing auth token:', error);
+      console.warn('Error clearing auth token:', error);
     }
   }
 

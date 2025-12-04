@@ -137,6 +137,10 @@ npx expo start --web
 
 ## Recent Changes
 
+- Refactored all tab screens to properly follow MVP architecture
+- Views now delegate all business logic and formatting to presenters
+- Added formatBalance method to PointsPresenter for balance display
+- All screens use useMemo for presenter instantiation with callbacks
 - Initial MVP architecture implementation
 - Complete screen structure with navigation
 - Localization setup for 3 languages

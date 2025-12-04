@@ -1,0 +1,141 @@
+I want you to build a production‑ready mobile app using React Native with Expo.
+The app is a membership loyalty app and must target both iOS and Android from a single codebase.
+
+Please follow these architecture and feature requirements:
+
+Architecture and project structure
+
+Use an MVP (Model–View–Presenter) style architecture.
+
+Create a clear folder structure, for example:
+
+models/ for data models (Member, PointsBalance, Transaction, Coupon, etc.)
+
+views/ (or screens/) for React components that render UI and handle user input events
+
+presenters/ for presenter classes or modules containing screen logic
+
+services/ or api/ for all REST API calls and data access logic
+
+The View components must not contain business logic or direct API calls.
+
+The Presenter should:
+
+Receive events from the View (e.g. onLogin, onRedeemCoupon)
+
+Call the service/API layer
+
+Pass data or error states back to the View via clearly defined methods / props (e.g. showLoading, showError, renderPoints, renderCoupons).
+
+Core features
+a. User registration and login
+
+Users can register, log in, and log out using my existing backend HTTPS REST APIs (JSON).
+
+Authentication uses JWT or a session token returned by my backend.
+
+Store the auth token securely (e.g. using SecureStore or AsyncStorage) and attach it to every protected API request.
+
+b. Points balance and transaction history
+
+After login, the user can see:
+
+Current points balance
+
+A list of past purchase transactions and how many points were earned for each transaction.
+
+All data must come from my existing REST APIs (read‑only on the client).
+
+Do not calculate points inside the app; just display the values returned by the API.
+
+c. Coupon list and redemption
+
+A screen that shows available coupons for the logged‑in user, loaded from my REST API.
+
+When the user taps “Redeem”, call my redeem API with the member ID and coupon ID.
+
+Handle success and error responses and update the UI accordingly.
+
+After a successful redemption, show the coupon code or QR code returned by the API.
+
+d. Push notifications (promotions)
+
+Integrate Expo Notifications / FCM so the app can receive promotional push notifications on Android and iOS.
+
+On first launch, ask the user for notification permission.
+
+When a device push token is generated, send it to my backend via an API so I can send targeted promotions later.
+
+Multi‑language UI (Traditional Chinese default, Simplified Chinese, English)
+
+Implement localization using expo‑localization and a suitable i18n library (for example i18next or i18n‑js).
+
+Support three languages:
+
+zh-HK – Traditional Chinese (default)
+
+zh-CN – Simplified Chinese
+
+en – English
+
+On first launch, detect the device language and choose the best match, falling back to Traditional Chinese by default.
+
+Provide a Language screen in Settings where the user can manually switch language.
+
+Store the selected language (e.g. in AsyncStorage) and reuse it on the next app launch.
+
+Screens and navigation
+
+Use React Navigation (or a similar library) for navigation with a clean structure.
+
+Required screens:
+
+Splash / Auto‑login: check token, decide whether to go to Home or Login
+
+Login / Register
+
+Home: show points summary and key shortcuts
+
+Points / Transaction History
+
+Coupons: list + redeem flow
+
+Settings: language switch, notification toggle, logout
+
+Use a simple, modern UI with bottom tabs or another intuitive navigation pattern for the main sections.
+
+API integration layer
+
+All data must come from my backend using HTTPS REST APIs with JSON.
+
+Create a dedicated service / API client layer (e.g. apiClient.ts) responsible for:
+
+Base URL configuration
+
+Attaching the auth token to headers when available
+
+Handling common errors (network errors, unauthorized, etc.).
+
+Use TypeScript interfaces or types for all request/response data models where possible.
+
+Implementation details
+
+Start by scaffolding the complete project structure (folders, basic files, navigation, localization setup, and empty MVP wiring for each screen).
+
+Then implement basic working versions of the core flows:
+
+Login with dummy or placeholder endpoints
+
+Fetch and display points balance and a sample transaction list
+
+Display a coupon list and simulate a redeem call
+
+Use placeholder API endpoints and sample JSON models, but clearly mark all places where I must replace them with my real API URLs, request bodies, and response models (for example with // TODO: replace with real API comments).
+
+Add basic loading states, error handling, and simple input validation for forms.
+
+Finally, please:
+
+Explain in comments or a short README how the MVP architecture is organized in this Expo project.
+
+Make the code clean and easy to extend so I can plug in my real REST APIs and business logic later.

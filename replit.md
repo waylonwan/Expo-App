@@ -107,16 +107,16 @@ Translation files are in `src/localization/translations/`. On first launch, the 
 # Install dependencies
 npm install
 
-# Start development server
-npx expo start
+# Start development server (for Replit - binds to network interface)
+npx expo start --web --port 5000 --host lan
 
-# Run on iOS simulator
+# Run on iOS simulator (local development)
 npx expo start --ios
 
-# Run on Android emulator
+# Run on Android emulator (local development)
 npx expo start --android
 
-# Run in web browser
+# Run in web browser (local development)
 npx expo start --web
 ```
 

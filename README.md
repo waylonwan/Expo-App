@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+# Baleno Membership Loyalty App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A production-ready mobile membership loyalty app for Baleno, built with React Native and Expo.
 
-## Get started
+## Features
 
-1. Install dependencies
+- User registration and login with JWT authentication
+- Points balance and transaction history
+- Coupon browsing and redemption with QR codes
+- Push notifications for promotions
+- Multi-language support (Traditional Chinese, Simplified Chinese, English)
 
-   ```bash
-   npm install
-   ```
+## Getting Started
 
-2. Start the app
+### Prerequisites
 
-   ```bash
-   npx expo start
-   ```
+- Node.js 18+
+- npm or yarn
+- Expo CLI (installed globally or via npx)
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Installation
 
 ```bash
-npm run reset-project
+# Install dependencies
+npm install
+
+# Start the Expo development server
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Running the App
 
-## Learn more
+After starting the development server, you can:
 
-To learn more about developing your project with Expo, look at the following resources:
+- Press `w` to open in web browser
+- Press `a` to open on Android emulator
+- Press `i` to open on iOS simulator
+- Scan the QR code with Expo Go app on your device
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Project Structure
 
-## Join the community
+This project follows the **MVP (Model-View-Presenter)** architecture:
 
-Join our community of developers creating universal apps.
+```
+src/
+├── models/         # Data models (Member, Points, Coupon)
+├── presenters/     # Business logic layer
+├── services/       # API client and service layer
+├── contexts/       # React contexts for state management
+├── localization/   # i18n translations
+└── components/     # Shared UI components
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+app/                # Expo Router screens (Views)
+├── (auth)/         # Login and Register screens
+├── (tabs)/         # Main app tabs
+└── _layout.tsx     # Root layout
+```
+
+## API Integration
+
+The app uses placeholder API endpoints. To connect to your backend:
+
+1. Update the base URL in `src/services/apiClient.ts`
+2. Adjust request/response models as needed
+3. Search for `// TODO:` comments for areas requiring customization
+
+## Localization
+
+Supported languages:
+- Traditional Chinese (zh-HK) - Default
+- Simplified Chinese (zh-CN)
+- English (en)
+
+Add or modify translations in `src/localization/translations/`
+
+## Tech Stack
+
+- React Native 0.81
+- Expo SDK 54
+- Expo Router (file-based navigation)
+- i18next (internationalization)
+- expo-secure-store (secure token storage)
+- expo-notifications (push notifications)
+
+## License
+
+Proprietary - Baleno

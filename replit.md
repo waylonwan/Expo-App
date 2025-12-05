@@ -150,14 +150,32 @@ For testing the app without a backend, use:
 - **Password**: `demo1234`
 
 This demo account provides:
-- Mock member profile (陳小明, Gold tier)
+- Mock member profile (陳小明)
 - 2,580 current points with 500 expiring
 - 10 sample transactions
 - 5 available coupons to redeem
 - 2 previously redeemed coupons
 
+## Navigation Flow
+
+1. **Guest Users**:
+   - Start on Home page with Baleno logo and "Log In / Register" button
+   - Only Home tab is visible in navigation
+   - Can browse login/register screens
+   - Protected screens (Points, Coupons, Settings) redirect to Home if accessed via deep link
+
+2. **Authenticated Users**:
+   - All tabs visible: Home, Points, Coupons, Settings
+   - Login/Register screens redirect to Home if accessed
+   - Logout returns to Home guest view
+
 ## Recent Changes
 
+- **2025-12-05**: Added auth guards to protected screens (points, coupons, settings)
+- **2025-12-05**: Fixed React hooks ordering to comply with hooks rules
+- **2025-12-05**: Added authLoading check to home screen before rendering
+- **2025-12-05**: Guest users now see Baleno logo and login button on home page
+- **2025-12-05**: Only Home tab shown for unauthenticated users
 - **2025-12-05**: Fixed Expo Go connection - switched to Tunnel mode with @expo/ngrok
 - **2025-12-05**: Updated theme to Baleno brand red (#E31837) across all UI
 - **2025-12-05**: Added Baleno logo to login and register screens

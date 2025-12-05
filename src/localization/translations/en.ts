@@ -39,13 +39,18 @@ export default {
   home: {
     title: 'Home',
     welcome: 'Welcome',
+    welcomeGuest: 'Welcome to Baleno',
+    guestMessage: 'Log in to your membership account to enjoy exclusive points and rewards',
+    loginOrRegister: 'Log In / Register',
+    benefit1: 'Earn points on purchases',
+    benefit2: 'Redeem exclusive coupons',
+    benefit3: 'Receive latest offers',
     currentPoints: 'Current Points',
     expiringPoints: 'Expiring Points',
     expiryDate: 'Expiry Date',
     viewHistory: 'View History',
     viewCoupons: 'View Coupons',
     memberSince: 'Member Since',
-    tier: 'Tier',
   },
   points: {
     title: 'Points',
@@ -77,6 +82,7 @@ export default {
   },
   settings: {
     title: 'Settings',
+    settings: 'Settings',
     language: 'Language',
     notifications: 'Notifications',
     notificationsEnabled: 'Push Notifications',

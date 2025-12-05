@@ -8,10 +8,12 @@ import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAuth } from '@/src/contexts';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Tabs
@@ -43,6 +45,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="receipt" size={size || 24} color={color} />
           ),
+          href: isAuthenticated ? '/(tabs)/points' : null,
         }}
       />
       <Tabs.Screen
@@ -52,6 +55,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="gift" size={size || 24} color={color} />
           ),
+          href: isAuthenticated ? '/(tabs)/coupons' : null,
         }}
       />
       <Tabs.Screen
@@ -61,6 +65,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size || 24} color={color} />
           ),
+          href: isAuthenticated ? '/(tabs)/settings' : null,
         }}
       />
     </Tabs>

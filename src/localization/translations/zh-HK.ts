@@ -39,13 +39,18 @@ export default {
   home: {
     title: '主頁',
     welcome: '歡迎',
+    welcomeGuest: '歡迎來到 Baleno',
+    guestMessage: '登入會員帳戶，享受專屬積分優惠和獎賞',
+    loginOrRegister: '登入 / 註冊',
+    benefit1: '消費賺取積分',
+    benefit2: '兌換專屬優惠券',
+    benefit3: '接收最新優惠資訊',
     currentPoints: '目前積分',
     expiringPoints: '即將到期積分',
     expiryDate: '到期日',
     viewHistory: '查看記錄',
     viewCoupons: '查看優惠券',
     memberSince: '會員加入日期',
-    tier: '會員等級',
   },
   points: {
     title: '積分',
@@ -77,6 +82,7 @@ export default {
   },
   settings: {
     title: '設定',
+    settings: '設定',
     language: '語言',
     notifications: '通知',
     notificationsEnabled: '推送通知',

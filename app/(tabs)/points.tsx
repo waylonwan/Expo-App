@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { Card, LoadingOverlay } from '@/src/components';
+import { useAuth } from '@/src/contexts';
 import { PointsPresenter, PointsViewCallbacks } from '@/src/presenters';
 import { PointsBalance, Transaction } from '@/src/models';
 
 export default function PointsScreen() {
   const { t } = useTranslation();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [pointsBalance, setPointsBalance] = useState<PointsBalance | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,8 +40,16 @@ export default function PointsScreen() {
   const presenter = useMemo(() => new PointsPresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    presenter.refresh();
-  }, [presenter]);
+    if (!authLoading && !isAuthenticated) {
+      router.replace('/(tabs)' as any);
+    }
+  }, [isAuthenticated, authLoading]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      presenter.refresh();
+    }
+  }, [presenter, isAuthenticated]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
@@ -96,6 +107,10 @@ export default function PointsScreen() {
     </Card>
   );
 
+  if (!isAuthenticated) {
+    return <LoadingOverlay visible={true} />;
+  }
+
   if (isLoading && transactions.length === 0) {
     return <LoadingOverlay visible={true} />;
   }
@@ -108,21 +123,13 @@ export default function PointsScreen() {
 
       {pointsBalance && (
         <Card style={styles.balanceCard} variant="elevated">
-          <View style={styles.balanceRow}>
-            <View style={styles.balanceItem}>
-              <ThemedText style={styles.balanceLabel}>{t('home.currentPoints')}</ThemedText>
-              <ThemedText style={styles.balanceValue}>
-                {presenter.formatBalance(pointsBalance.currentPoints)}
-              </ThemedText>
-            </View>
-            <View style={styles.balanceDivider} />
-            <View style={styles.balanceItem}>
-              <ThemedText style={styles.balanceLabel}>{t('points.lifetimePoints')}</ThemedText>
-              <ThemedText style={styles.balanceValue}>
-                {presenter.formatBalance(pointsBalance.lifetimePoints)}
-              </ThemedText>
-            </View>
+          <View style={styles.balanceHeader}>
+            <Ionicons name="star" size={28} color="#F59E0B" />
+            <ThemedText style={styles.balanceLabel}>{t('points.balance')}</ThemedText>
           </View>
+          <ThemedText style={styles.balanceValue}>
+            {presenter.formatBalance(pointsBalance.currentPoints)}
+          </ThemedText>
         </Card>
       )}
 
@@ -170,30 +177,22 @@ const styles = StyleSheet.create({
   },
   balanceCard: {
     marginHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 24,
   },
-  balanceRow: {
+  balanceHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  balanceItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  balanceDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: '#E5E7EB',
+    gap: 8,
+    marginBottom: 8,
   },
   balanceLabel: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#6B7280',
-    marginBottom: 4,
   },
   balanceValue: {
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#E31837',
+    color: '#111827',
   },
   sectionTitle: {
     fontSize: 18,
@@ -208,11 +207,10 @@ const styles = StyleSheet.create({
   },
   transactionCard: {
     marginBottom: 12,
-    padding: 12,
   },
   transactionHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   iconContainer: {
     width: 40,
@@ -226,13 +224,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   transactionDescription: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
     color: '#111827',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   transactionDate: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#6B7280',
   },
   transactionLocation: {
@@ -244,12 +242,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   pointsAmount: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   typeLabel: {
-    fontSize: 10,
-    fontWeight: '500',
+    fontSize: 12,
     marginTop: 2,
   },
   emptyContainer: {
@@ -264,6 +261,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#EF4444',
     textAlign: 'center',
-    marginTop: 16,
+    padding: 16,
   },
 });

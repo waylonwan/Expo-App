@@ -22,9 +22,7 @@ function NavigationHandler() {
 
     const inAuthGroup = (segments[0] as string) === '(auth)';
 
-    if (!isAuthenticated && !inAuthGroup) {
-      router.replace('/(auth)/login' as any);
-    } else if (isAuthenticated && inAuthGroup) {
+    if (isAuthenticated && inAuthGroup) {
       router.replace('/(tabs)' as any);
     }
   }, [isAuthenticated, segments, isLoading, navigationState?.key]);
@@ -58,8 +56,8 @@ function RootLayoutContent() {
           <LanguageProvider>
             <NavigationHandler />
             <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>
             <StatusBar style="auto" />

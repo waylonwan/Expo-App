@@ -39,13 +39,18 @@ export default {
   home: {
     title: '首页',
     welcome: '欢迎',
+    welcomeGuest: '欢迎来到 Baleno',
+    guestMessage: '登录会员账户，享受专属积分优惠和奖励',
+    loginOrRegister: '登录 / 注册',
+    benefit1: '消费赚取积分',
+    benefit2: '兑换专属优惠券',
+    benefit3: '接收最新优惠信息',
     currentPoints: '当前积分',
     expiringPoints: '即将到期积分',
     expiryDate: '到期日',
     viewHistory: '查看记录',
     viewCoupons: '查看优惠券',
     memberSince: '会员加入日期',
-    tier: '会员等级',
   },
   points: {
     title: '积分',
@@ -77,6 +82,7 @@ export default {
   },
   settings: {
     title: '设置',
+    settings: '设置',
     language: '语言',
     notifications: '通知',
     notificationsEnabled: '推送通知',

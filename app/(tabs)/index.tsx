@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
-import { Card, LoadingOverlay } from '@/src/components';
+import { Card, LoadingOverlay, Button } from '@/src/components';
 import { useAuth } from '@/src/contexts';
 import { HomePresenter, HomeViewCallbacks } from '@/src/presenters';
 import { PointsBalance, Member } from '@/src/models';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const { member } = useAuth();
+  const { member, isAuthenticated, isLoading: authLoading } = useAuth();
   const [pointsBalance, setPointsBalance] = useState<PointsBalance | null>(null);
   const [displayedMember, setDisplayedMember] = useState<Member | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,27 +32,65 @@ export default function HomeScreen() {
   const presenter = useMemo(() => new HomePresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    if (member) {
+    if (member && isAuthenticated) {
+      setIsLoading(true);
       presenter.loadHomeData(member);
     }
-  }, [member, presenter]);
+  }, [member, isAuthenticated, presenter]);
 
   const handleRefresh = useCallback(() => {
+    if (!isAuthenticated) return;
     setIsRefreshing(true);
     if (member) {
       presenter.loadHomeData(member);
     }
-  }, [member, presenter]);
+  }, [member, presenter, isAuthenticated]);
 
-  const getTierColor = (tier: string) => {
-    const colors: Record<string, string> = {
-      standard: '#6B7280',
-      silver: '#9CA3AF',
-      gold: '#F59E0B',
-      platinum: '#8B5CF6',
-    };
-    return colors[tier] || '#6B7280';
+  const handleLoginPress = () => {
+    router.push('/(auth)/login' as any);
   };
+
+  if (authLoading) {
+    return <LoadingOverlay visible={true} />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.guestContent}>
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require('@/assets/images/baleno-logo.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+        
+        <ThemedText style={styles.guestTitle}>{t('home.welcomeGuest')}</ThemedText>
+        <ThemedText style={styles.guestSubtitle}>{t('home.guestMessage')}</ThemedText>
+        
+        <View style={styles.benefitsContainer}>
+          <View style={styles.benefitItem}>
+            <Ionicons name="star" size={24} color="#F59E0B" />
+            <ThemedText style={styles.benefitText}>{t('home.benefit1')}</ThemedText>
+          </View>
+          <View style={styles.benefitItem}>
+            <Ionicons name="gift" size={24} color="#E31837" />
+            <ThemedText style={styles.benefitText}>{t('home.benefit2')}</ThemedText>
+          </View>
+          <View style={styles.benefitItem}>
+            <Ionicons name="notifications" size={24} color="#3B82F6" />
+            <ThemedText style={styles.benefitText}>{t('home.benefit3')}</ThemedText>
+          </View>
+        </View>
+
+        <Button 
+          title={t('home.loginOrRegister')}
+          onPress={handleLoginPress}
+          style={styles.loginButton}
+        />
+      </ScrollView>
+    );
+  }
 
   if (isLoading && !pointsBalance) {
     return <LoadingOverlay visible={true} />;
@@ -71,17 +109,18 @@ export default function HomeScreen() {
         />
       }
     >
+      <View style={styles.headerWithLogo}>
+        <Image 
+          source={require('@/assets/images/baleno-logo.png')} 
+          style={styles.headerLogo}
+          resizeMode="contain"
+        />
+      </View>
+
       <View style={styles.header}>
         <ThemedText type="title" style={styles.welcomeText}>
           {t('home.welcome')}, {displayedMember?.name || member?.name || 'Member'}
         </ThemedText>
-        {displayedMember && (
-          <View style={[styles.tierBadge, { backgroundColor: getTierColor(displayedMember.membershipTier) }]}>
-            <ThemedText style={styles.tierText}>
-              {presenter.getMemberTierLabel(displayedMember.membershipTier)}
-            </ThemedText>
-          </View>
-        )}
       </View>
 
       <Card style={styles.pointsCard} variant="elevated">
@@ -147,13 +186,6 @@ export default function HomeScreen() {
               <ThemedText style={styles.memberValue}>{presenter.formatDate(displayedMember.joinDate)}</ThemedText>
             </View>
           </View>
-          
-          <View style={styles.lifetimePoints}>
-            <ThemedText style={styles.lifetimeLabel}>{t('points.lifetimePoints')}</ThemedText>
-            <ThemedText style={styles.lifetimeValue}>
-              {presenter.formatPoints(pointsBalance?.lifetimePoints || 0)}
-            </ThemedText>
-          </View>
         </Card>
       )}
 
@@ -173,27 +205,69 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 60,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  guestContent: {
+    padding: 24,
+    paddingTop: 80,
     alignItems: 'center',
+    flexGrow: 1,
+  },
+  logoContainer: {
+    marginBottom: 32,
+  },
+  logo: {
+    width: 180,
+    height: 60,
+  },
+  headerLogo: {
+    width: 120,
+    height: 40,
+  },
+  headerWithLogo: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  guestTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  guestSubtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 24,
+  },
+  benefitsContainer: {
+    width: '100%',
+    marginBottom: 32,
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    gap: 16,
+  },
+  benefitText: {
+    fontSize: 16,
+    color: '#374151',
+    flex: 1,
+  },
+  loginButton: {
+    width: '100%',
+  },
+  header: {
     marginBottom: 24,
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#111827',
-    flex: 1,
-  },
-  tierBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  tierText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
   },
   pointsCard: {
     marginBottom: 24,
@@ -278,24 +352,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#111827',
     flex: 1,
-  },
-  lifetimePoints: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  lifetimeLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  lifetimeValue: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#E31837',
   },
   errorText: {
     color: '#EF4444',

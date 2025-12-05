@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ import { SupportedLanguage } from '@/src/localization';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
-  const { member, logout } = useAuth();
+  const { member, logout, isAuthenticated, isLoading: authLoading } = useAuth();
   const { currentLanguage, supportedLanguages } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -32,7 +32,7 @@ export default function SettingsScreen() {
       setNotificationsEnabled(enabled);
     },
     onLogoutSuccess: () => {
-      router.replace('/(auth)/login' as any);
+      router.replace('/(tabs)' as any);
     },
     showLogoutConfirmation: () => {
       Alert.alert(
@@ -51,6 +51,12 @@ export default function SettingsScreen() {
   }), [t]);
 
   const presenter = useMemo(() => new SettingsPresenter(callbacks), [callbacks]);
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace('/(tabs)' as any);
+    }
+  }, [isAuthenticated, authLoading]);
 
   const handleLogout = useCallback(() => {
     presenter.onLogoutTapped();
@@ -95,6 +101,10 @@ export default function SettingsScreen() {
       </View>
     </TouchableOpacity>
   );
+
+  if (!isAuthenticated) {
+    return <LoadingOverlay visible={true} />;
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>

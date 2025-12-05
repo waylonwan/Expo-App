@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Alert, Modal } from 'react-native';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
@@ -10,7 +11,7 @@ import { Coupon, RedeemCouponResponse } from '@/src/models';
 
 export default function CouponsScreen() {
   const { t } = useTranslation();
-  const { member } = useAuth();
+  const { member, isAuthenticated, isLoading: authLoading } = useAuth();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -57,12 +58,20 @@ export default function CouponsScreen() {
   const presenter = useMemo(() => new CouponPresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    if (selectedTab === 'available') {
-      presenter.loadAvailableCoupons();
-    } else {
-      presenter.loadRedeemedCoupons();
+    if (!authLoading && !isAuthenticated) {
+      router.replace('/(tabs)' as any);
     }
-  }, [selectedTab, presenter]);
+  }, [isAuthenticated, authLoading]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (selectedTab === 'available') {
+        presenter.loadAvailableCoupons();
+      } else {
+        presenter.loadRedeemedCoupons();
+      }
+    }
+  }, [selectedTab, presenter, isAuthenticated]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
@@ -130,7 +139,7 @@ export default function CouponsScreen() {
     </Card>
   );
 
-  if (isLoading && coupons.length === 0) {
+  if (!isAuthenticated || (isLoading && coupons.length === 0)) {
     return <LoadingOverlay visible={true} />;
   }
 

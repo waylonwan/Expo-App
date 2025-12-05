@@ -107,8 +107,8 @@ Translation files are in `src/localization/translations/`. On first launch, the 
 # Install dependencies
 npm install
 
-# Start development server (for Replit - binds to network interface)
-npx expo start --web --port 5000 --host lan
+# Start development server with Tunnel (for Replit + Expo Go on mobile)
+npx expo start --tunnel --port 5000
 
 # Run on iOS simulator (local development)
 npx expo start --ios
@@ -119,6 +119,14 @@ npx expo start --android
 # Run in web browser (local development)
 npx expo start --web
 ```
+
+### Expo Go Connection (Replit Environment)
+
+To connect Expo Go on your mobile device:
+1. The development server uses **Tunnel mode** (`--tunnel`) via ngrok
+2. This creates a public URL that bypasses network restrictions
+3. Scan the QR code shown in the terminal with Expo Go (Android) or Camera app (iOS)
+4. The tunnel URL format: `exp://xxxxx-anonymous-5000.exp.direct`
 
 ## Key Features
 
@@ -150,6 +158,9 @@ This demo account provides:
 
 ## Recent Changes
 
+- **2025-12-05**: Fixed Expo Go connection - switched to Tunnel mode with @expo/ngrok
+- **2025-12-05**: Updated theme to Baleno brand red (#E31837) across all UI
+- **2025-12-05**: Added Baleno logo to login and register screens
 - Added demo login functionality with mock data
 - Refactored all tab screens to properly follow MVP architecture
 - Views now delegate all business logic and formatting to presenters

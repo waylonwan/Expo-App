@@ -146,8 +146,8 @@ To connect Expo Go on your mobile device:
 ## Demo Account
 
 For testing the app without a backend, use:
-- **Email**: `demo@baleno.com`
-- **Password**: `demo1234`
+- **Username**: `demo`
+- **Password**: `demo`
 
 This demo account provides:
 - Mock member profile (陳小明)

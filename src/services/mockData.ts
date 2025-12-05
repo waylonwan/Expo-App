@@ -1,13 +1,13 @@
 import { Member, PointsBalance, Transaction, Coupon } from '../models';
 
 export const DEMO_CREDENTIALS = {
-  email: 'demo@baleno.com',
-  password: 'demo1234',
+  email: 'demo',
+  password: 'demo',
 };
 
 export const mockMember: Member = {
   id: 'demo-member-001',
-  email: 'demo@baleno.com',
+  email: 'demo',
   name: '陳小明',
   phone: '+852 9123 4567',
   membershipTier: 'gold',

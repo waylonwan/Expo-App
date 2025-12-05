@@ -174,9 +174,11 @@ This demo account provides:
 Design documentation is located in the `/docs` folder:
 
 - **SRS-需求規格說明書.md** - Software Requirements Specification with functional requirements, non-functional requirements, user stories, and acceptance criteria
+- **系統架構設計文件.md** - System Architecture Design Document with MVP pattern, tech stack, directory structure, and security architecture
 
 ## Recent Changes
 
+- **2025-12-05**: Created System Architecture Design Document
 - **2025-12-05**: Created Software Requirements Specification (SRS) document
 - **2025-12-05**: Added auth guards to protected screens (points, coupons, settings)
 - **2025-12-05**: Fixed React hooks ordering to comply with hooks rules

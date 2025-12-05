@@ -88,12 +88,12 @@ export class PointsPresenter {
   }
 
   formatBalance(points: number): string {
-    return points.toLocaleString();
+    return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   formatPoints(points: number): string {
     const sign = points >= 0 ? '+' : '';
-    return `${sign}${points.toLocaleString()}`;
+    return `${sign}${points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   }
 
   formatDate(dateString: string): string {

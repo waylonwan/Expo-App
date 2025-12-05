@@ -82,6 +82,7 @@ export default {
   settings: {
     title: 'Settings',
     settings: 'Settings',
+    personalInfo: 'Personal Information',
     language: 'Language',
     notifications: 'Notifications',
     notificationsEnabled: 'Push Notifications',

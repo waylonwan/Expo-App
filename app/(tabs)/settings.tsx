@@ -131,6 +131,32 @@ export default function SettingsScreen() {
         </Card>
       )}
 
+      <ThemedText style={styles.sectionTitle}>{t('settings.personalInfo')}</ThemedText>
+
+      <Card style={styles.settingsCard}>
+        {renderSettingRow(
+          'mail-outline',
+          t('auth.email'),
+          member?.email
+        )}
+        
+        <View style={styles.divider} />
+        
+        {member?.phone && renderSettingRow(
+          'call-outline',
+          t('auth.phone'),
+          member.phone
+        )}
+        
+        {member?.phone && <View style={styles.divider} />}
+        
+        {renderSettingRow(
+          'calendar-outline',
+          t('home.memberSince'),
+          member?.joinDate ? new Date(member.joinDate).toLocaleDateString() : ''
+        )}
+      </Card>
+
       <ThemedText style={styles.sectionTitle}>{t('settings.settings')}</ThemedText>
 
       <Card style={styles.settingsCard}>

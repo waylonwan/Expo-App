@@ -165,29 +165,6 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {displayedMember && (
-        <Card style={styles.memberCard}>
-          <View style={styles.memberInfo}>
-            <View style={styles.memberRow}>
-              <Ionicons name="person-outline" size={20} color="#6B7280" />
-              <ThemedText style={styles.memberLabel}>{t('auth.email')}</ThemedText>
-              <ThemedText style={styles.memberValue}>{displayedMember.email}</ThemedText>
-            </View>
-            {displayedMember.phone && (
-              <View style={styles.memberRow}>
-                <Ionicons name="call-outline" size={20} color="#6B7280" />
-                <ThemedText style={styles.memberLabel}>{t('auth.phone')}</ThemedText>
-                <ThemedText style={styles.memberValue}>{displayedMember.phone}</ThemedText>
-              </View>
-            )}
-            <View style={styles.memberRow}>
-              <Ionicons name="calendar-outline" size={20} color="#6B7280" />
-              <ThemedText style={styles.memberLabel}>{t('home.memberSince')}</ThemedText>
-              <ThemedText style={styles.memberValue}>{presenter.formatDate(displayedMember.joinDate)}</ThemedText>
-            </View>
-          </View>
-        </Card>
-      )}
 
       {error && (
         <ThemedText style={styles.errorText}>{error}</ThemedText>
@@ -331,27 +308,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#374151',
     textAlign: 'center',
-  },
-  memberCard: {
-    marginBottom: 24,
-  },
-  memberInfo: {
-    gap: 12,
-  },
-  memberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  memberLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-    width: 100,
-  },
-  memberValue: {
-    fontSize: 14,
-    color: '#111827',
-    flex: 1,
   },
   errorText: {
     color: '#EF4444',

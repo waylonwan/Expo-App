@@ -82,6 +82,7 @@ export default {
   settings: {
     title: '设置',
     settings: '设置',
+    personalInfo: '个人资料',
     language: '语言',
     notifications: '通知',
     notificationsEnabled: '推送通知',

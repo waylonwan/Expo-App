@@ -36,7 +36,7 @@ export class HomePresenter {
   }
 
   formatPoints(points: number): string {
-    return points.toLocaleString();
+    return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   formatDate(dateString: string): string {

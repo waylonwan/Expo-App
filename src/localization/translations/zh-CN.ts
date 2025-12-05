@@ -51,6 +51,10 @@ export default {
     viewHistory: '查看记录',
     viewCoupons: '查看优惠券',
     memberSince: '会员加入日期',
+    memberQR: '会员 QR Code',
+    memberQRHint: '结账时出示给店员扫描',
+    memberId: '会员编号',
+    qrInstructions: '在店内结账时，请向店员出示此 QR Code，店员扫描后即可为您累积积分。',
   },
   points: {
     title: '积分',

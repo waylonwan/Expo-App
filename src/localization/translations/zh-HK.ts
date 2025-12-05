@@ -51,6 +51,10 @@ export default {
     viewHistory: '查看記錄',
     viewCoupons: '查看優惠券',
     memberSince: '會員加入日期',
+    memberQR: '會員 QR Code',
+    memberQRHint: '結帳時出示給職員掃描',
+    memberId: '會員編號',
+    qrInstructions: '在店內結帳時，請向職員出示此 QR Code，職員掃描後即可為您累積積分。',
   },
   points: {
     title: '積分',

@@ -51,6 +51,10 @@ export default {
     viewHistory: 'View History',
     viewCoupons: 'View Coupons',
     memberSince: 'Member Since',
+    memberQR: 'Member QR Code',
+    memberQRHint: 'Show to staff at checkout',
+    memberId: 'Member ID',
+    qrInstructions: 'Show this QR code to staff at checkout. They will scan it to add points to your account.',
   },
   points: {
     title: 'Points',

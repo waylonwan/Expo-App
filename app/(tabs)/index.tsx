@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Modal, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import QRCode from 'react-native-qrcode-svg';
 import { ThemedText } from '@/components/ThemedText';
 import { Card, LoadingOverlay, Button } from '@/src/components';
 import { useAuth } from '@/src/contexts';
 import { HomePresenter, HomeViewCallbacks } from '@/src/presenters';
 import { PointsBalance, Member } from '@/src/models';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -17,6 +20,7 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   const callbacks: HomeViewCallbacks = useMemo(() => ({
     showLoading: () => setIsLoading(true),
@@ -123,6 +127,24 @@ export default function HomeScreen() {
         </ThemedText>
       </View>
 
+      {/* Member QR Code Button */}
+      <TouchableOpacity 
+        style={styles.qrButton}
+        onPress={() => setShowQRModal(true)}
+        activeOpacity={0.8}
+      >
+        <View style={styles.qrButtonContent}>
+          <View style={styles.qrIconContainer}>
+            <Ionicons name="qr-code" size={32} color="#FFFFFF" />
+          </View>
+          <View style={styles.qrButtonText}>
+            <ThemedText style={styles.qrButtonTitle}>{t('home.memberQR')}</ThemedText>
+            <ThemedText style={styles.qrButtonSubtitle}>{t('home.memberQRHint')}</ThemedText>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+        </View>
+      </TouchableOpacity>
+
       <Card style={styles.pointsCard} variant="elevated">
         <View style={styles.pointsHeader}>
           <Ionicons name="star" size={32} color="#F59E0B" />
@@ -169,6 +191,52 @@ export default function HomeScreen() {
       {error && (
         <ThemedText style={styles.errorText}>{error}</ThemedText>
       )}
+
+      {/* Member QR Code Modal */}
+      <Modal
+        visible={showQRModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowQRModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <ThemedText style={styles.modalTitle}>{t('home.memberQR')}</ThemedText>
+              <TouchableOpacity 
+                onPress={() => setShowQRModal(false)}
+                style={styles.closeButton}
+              >
+                <Ionicons name="close" size={28} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.qrContainer}>
+              <View style={styles.qrWrapper}>
+                <QRCode
+                  value={`BALENO_MEMBER:${member?.id || 'unknown'}`}
+                  size={Math.min(screenWidth - 120, 250)}
+                  backgroundColor="#FFFFFF"
+                  color="#000000"
+                />
+              </View>
+              <ThemedText style={styles.memberName}>
+                {displayedMember?.name || member?.name}
+              </ThemedText>
+              <ThemedText style={styles.memberId}>
+                {t('home.memberId')}: {member?.id}
+              </ThemedText>
+            </View>
+
+            <View style={styles.qrInstructions}>
+              <Ionicons name="information-circle-outline" size={20} color="#6B7280" />
+              <ThemedText style={styles.qrInstructionText}>
+                {t('home.qrInstructions')}
+              </ThemedText>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -313,5 +381,105 @@ const styles = StyleSheet.create({
     color: '#EF4444',
     textAlign: 'center',
     marginTop: 16,
+  },
+  qrButton: {
+    backgroundColor: '#E31837',
+    borderRadius: 16,
+    marginBottom: 20,
+    shadowColor: '#E31837',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  qrButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  qrIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  qrButtonText: {
+    flex: 1,
+  },
+  qrButtonTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  qrButtonSubtitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  qrContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  qrWrapper: {
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    marginBottom: 16,
+  },
+  memberName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  memberId: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  qrInstructions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    padding: 16,
+    borderRadius: 12,
+    gap: 12,
+  },
+  qrInstructionText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 20,
   },
 });

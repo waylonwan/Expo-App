@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Modal, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Modal, Dimensions, Text, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -150,9 +150,9 @@ export default function HomeScreen() {
           <Ionicons name="star" size={32} color="#F59E0B" />
           <ThemedText style={styles.pointsLabel}>{t('home.currentPoints')}</ThemedText>
         </View>
-        <ThemedText style={styles.pointsValue}>
+        <Text style={styles.pointsValue}>
           {presenter.formatPoints(pointsBalance?.currentPoints || 0)}
-        </ThemedText>
+        </Text>
         
         {pointsBalance && pointsBalance.expiringPoints > 0 && (
           <View style={styles.expiringSection}>
@@ -328,10 +328,11 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   pointsValue: {
-    fontSize: 48,
-    fontWeight: 'bold',
+    fontSize: 42,
+    fontWeight: '600',
     color: '#111827',
     marginVertical: 8,
+    letterSpacing: 0,
   },
   expiringSection: {
     flexDirection: 'row',

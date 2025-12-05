@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl, Text } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -127,9 +127,9 @@ export default function PointsScreen() {
             <Ionicons name="star" size={28} color="#F59E0B" />
             <ThemedText style={styles.balanceLabel}>{t('points.balance')}</ThemedText>
           </View>
-          <ThemedText style={styles.balanceValue}>
+          <Text style={styles.balanceValue}>
             {presenter.formatBalance(pointsBalance.currentPoints)}
-          </ThemedText>
+          </Text>
         </Card>
       )}
 
@@ -191,8 +191,9 @@ const styles = StyleSheet.create({
   },
   balanceValue: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#111827',
+    letterSpacing: 0,
   },
   sectionTitle: {
     fontSize: 18,

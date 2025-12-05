@@ -169,8 +169,15 @@ This demo account provides:
    - Login/Register screens redirect to Home if accessed
    - Logout returns to Home guest view
 
+## Design Documents
+
+Design documentation is located in the `/docs` folder:
+
+- **SRS-需求規格說明書.md** - Software Requirements Specification with functional requirements, non-functional requirements, user stories, and acceptance criteria
+
 ## Recent Changes
 
+- **2025-12-05**: Created Software Requirements Specification (SRS) document
 - **2025-12-05**: Added auth guards to protected screens (points, coupons, settings)
 - **2025-12-05**: Fixed React hooks ordering to comply with hooks rules
 - **2025-12-05**: Added authLoading check to home screen before rendering

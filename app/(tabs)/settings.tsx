@@ -43,12 +43,17 @@ export default function SettingsScreen() {
           {
             text: t('auth.logout'),
             style: 'destructive',
-            onPress: () => presenter.confirmLogout(),
+            onPress: async () => {
+              setIsLoading(true);
+              await logout();
+              setIsLoading(false);
+              router.replace('/(tabs)' as any);
+            },
           },
         ]
       );
     },
-  }), [t]);
+  }), [t, logout]);
 
   const presenter = useMemo(() => new SettingsPresenter(callbacks), [callbacks]);
 

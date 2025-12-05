@@ -37,7 +37,7 @@ export default function LoginScreen() {
       setError(t('auth.invalidEmail'));
       return;
     }
-    if (!password.trim() || password.length < 6) {
+    if (!password.trim()) {
       setError(t('auth.invalidPassword'));
       return;
     }
@@ -92,7 +92,7 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             placeholder="******"
             isPassword
-            error={error && (!password.trim() || password.length < 6) ? t('auth.invalidPassword') : undefined}
+            error={error && !password.trim() ? t('auth.invalidPassword') : undefined}
           />
 
           <Button

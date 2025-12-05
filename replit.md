@@ -131,7 +131,7 @@ To connect Expo Go on your mobile device:
 ## Key Features
 
 1. **User Authentication**: JWT-based with secure token storage
-2. **Points System**: View balance, lifetime points, expiring points
+2. **Points System**: View current balance and transaction history
 3. **Transaction History**: Paginated list with pull-to-refresh
 4. **Coupon Redemption**: Browse, redeem, and view redemption codes/QR
 5. **Push Notifications**: FCM/APNs integration for promotions

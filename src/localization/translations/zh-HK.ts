@@ -61,7 +61,6 @@ export default {
     expire: '過期',
     adjust: '調整',
     noTransactions: '暫無交易記錄',
-    lifetimePoints: '累積總積分',
   },
   coupons: {
     title: '優惠券',

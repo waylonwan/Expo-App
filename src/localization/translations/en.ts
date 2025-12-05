@@ -61,7 +61,6 @@ export default {
     expire: 'Expired',
     adjust: 'Adjusted',
     noTransactions: 'No transactions yet',
-    lifetimePoints: 'Lifetime Points',
   },
   coupons: {
     title: 'Coupons',

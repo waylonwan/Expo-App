@@ -31,6 +31,7 @@ export default {
     registerSuccess: '注册成功',
     logoutConfirm: '确定要退出登录吗？',
     invalidEmail: '请输入有效的邮箱地址',
+    invalidPhone: '请输入电话号码',
     invalidPassword: '密码必须至少6个字符',
     passwordMismatch: '密码不匹配',
     loginFailed: '登录失败，请检查您的凭据。',

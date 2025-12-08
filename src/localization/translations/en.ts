@@ -31,6 +31,7 @@ export default {
     registerSuccess: 'Registration successful',
     logoutConfirm: 'Are you sure you want to log out?',
     invalidEmail: 'Please enter a valid email',
+    invalidPhone: 'Please enter a phone number',
     invalidPassword: 'Password must be at least 6 characters',
     passwordMismatch: 'Passwords do not match',
     loginFailed: 'Login failed. Please check your credentials.',

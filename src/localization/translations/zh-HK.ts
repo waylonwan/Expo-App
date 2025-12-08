@@ -31,6 +31,7 @@ export default {
     registerSuccess: '註冊成功',
     logoutConfirm: '確定要登出嗎？',
     invalidEmail: '請輸入有效的電郵地址',
+    invalidPhone: '請輸入電話號碼',
     invalidPassword: '密碼必須至少6個字符',
     passwordMismatch: '密碼不匹配',
     loginFailed: '登入失敗，請檢查您的憑據。',

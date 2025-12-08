@@ -181,6 +181,7 @@ Design documentation is located in the `/docs` folder:
 
 ## Recent Changes
 
+- **2025-12-08**: Updated transaction history - removed product details from purchase transactions, now only shows store location and points earned
 - **2025-12-08**: Changed login authentication from email to phone number
   - Updated LoginRequest model to use `phone` instead of `email`
   - Added phone number validation in AuthPresenter

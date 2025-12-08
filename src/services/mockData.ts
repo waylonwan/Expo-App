@@ -1,7 +1,7 @@
 import { Member, PointsBalance, Transaction, Coupon } from '../models';
 
 export const DEMO_CREDENTIALS = {
-  phone: 'demo',
+  phone: '+852 0000 0000',
   password: 'demo',
 };
 
@@ -199,5 +199,5 @@ export function generateRedemptionCode(): string {
 }
 
 export function isDemoAccount(phone: string, password: string): boolean {
-  return phone === DEMO_CREDENTIALS.phone && password === DEMO_CREDENTIALS.password;
+  return (phone === DEMO_CREDENTIALS.phone || phone === 'demo') && password === DEMO_CREDENTIALS.password;
 }

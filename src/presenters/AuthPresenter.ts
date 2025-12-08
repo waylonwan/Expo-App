@@ -29,6 +29,18 @@ export class AuthPresenter {
     if (!phone || phone.trim().length === 0) {
       return { valid: false, error: 'auth.invalidPhone' };
     }
+    
+    const trimmedPhone = phone.trim();
+    
+    if (trimmedPhone === 'demo') {
+      return { valid: true };
+    }
+    
+    const phoneRegex = /^[\+\d][\d\s\-()]*$/;
+    if (!phoneRegex.test(trimmedPhone) || trimmedPhone.replace(/[\s\-()]/g, '').length < 4) {
+      return { valid: false, error: 'auth.invalidPhone' };
+    }
+    
     return { valid: true };
   }
 

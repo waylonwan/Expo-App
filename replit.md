@@ -146,7 +146,7 @@ To connect Expo Go on your mobile device:
 ## Demo Account
 
 For testing the app without a backend, use:
-- **Username**: `demo`
+- **Phone**: `+852 0000 0000` (or `demo` as shortcut)
 - **Password**: `demo`
 
 This demo account provides:
@@ -155,6 +155,8 @@ This demo account provides:
 - 10 sample transactions
 - 5 available coupons to redeem
 - 2 previously redeemed coupons
+
+**Note**: Login now uses phone number authentication instead of email.
 
 ## Navigation Flow
 
@@ -179,6 +181,12 @@ Design documentation is located in the `/docs` folder:
 
 ## Recent Changes
 
+- **2025-12-08**: Changed login authentication from email to phone number
+  - Updated LoginRequest model to use `phone` instead of `email`
+  - Added phone number validation in AuthPresenter
+  - Updated login UI to accept phone number input with placeholder "+852 0000 0000"
+  - Updated all translation files (zh-HK, zh-CN, en) with `invalidPhone` translations
+  - Demo account now uses phone field instead of email
 - **2025-12-05**: Created System Architecture Design Document
 - **2025-12-05**: Created Software Requirements Specification (SRS) document
 - **2025-12-05**: Added auth guards to protected screens (points, coupons, settings)

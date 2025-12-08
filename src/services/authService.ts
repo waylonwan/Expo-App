@@ -27,7 +27,7 @@ class AuthService {
   }
 
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    if (isDemoAccount(credentials.email, credentials.password)) {
+    if (isDemoAccount(credentials.phone, credentials.password)) {
       this.isDemoMode = true;
       this.resetDemoState();
       await apiClient.setAuthToken(DEMO_TOKEN);

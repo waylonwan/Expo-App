@@ -25,6 +25,13 @@ export class AuthPresenter {
     return { valid: true };
   }
 
+  validatePhone(phone: string): { valid: boolean; error?: string } {
+    if (!phone || phone.trim().length === 0) {
+      return { valid: false, error: 'auth.invalidPhone' };
+    }
+    return { valid: true };
+  }
+
   validatePassword(password: string): { valid: boolean; error?: string } {
     if (!password || password.length < 6) {
       return { valid: false, error: 'auth.invalidPassword' };
@@ -39,10 +46,10 @@ export class AuthPresenter {
     return { valid: true };
   }
 
-  async onLogin(email: string, password: string): Promise<void> {
-    const emailValidation = this.validateEmail(email);
-    if (!emailValidation.valid) {
-      this.callbacks.showError(emailValidation.error!);
+  async onLogin(phone: string, password: string): Promise<void> {
+    const phoneValidation = this.validatePhone(phone);
+    if (!phoneValidation.valid) {
+      this.callbacks.showError(phoneValidation.error!);
       return;
     }
 
@@ -55,7 +62,7 @@ export class AuthPresenter {
     this.callbacks.showLoading();
 
     try {
-      const response = await authService.login({ email, password });
+      const response = await authService.login({ phone, password });
 
       if (response.success && response.data) {
         await notificationService.registerForPushNotifications();

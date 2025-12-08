@@ -7,7 +7,7 @@ interface AuthContextType {
   member: Member | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (phone: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (email: string, password: string, name: string, phone?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshMember: () => Promise<void>;
@@ -50,10 +50,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkAuth();
   }, [checkAuth]);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (phone: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       setIsLoading(true);
-      const response = await authService.login({ email, password });
+      const response = await authService.login({ phone, password });
       
       if (response.success && response.data) {
         setMember(response.data.member);

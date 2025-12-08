@@ -11,7 +11,7 @@ import { Member } from '@/src/models';
 export default function LoginScreen() {
   const { t } = useTranslation();
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -33,8 +33,8 @@ export default function LoginScreen() {
   const handleLogin = useCallback(async () => {
     setError('');
     
-    if (!email.trim()) {
-      setError(t('auth.invalidEmail'));
+    if (!phone.trim()) {
+      setError(t('auth.invalidPhone'));
       return;
     }
     if (!password.trim()) {
@@ -43,7 +43,7 @@ export default function LoginScreen() {
     }
 
     setIsLoading(true);
-    const result = await login(email.trim(), password);
+    const result = await login(phone.trim(), password);
     setIsLoading(false);
 
     if (result.success) {
@@ -52,7 +52,7 @@ export default function LoginScreen() {
       setError(result.error || t('auth.loginFailed'));
       Alert.alert(t('common.error'), result.error || t('auth.loginFailed'));
     }
-  }, [email, password, login, t]);
+  }, [phone, password, login, t]);
 
   return (
     <KeyboardAvoidingView
@@ -76,14 +76,14 @@ export default function LoginScreen() {
 
         <View style={styles.form}>
           <Input
-            label={t('auth.email')}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="email@example.com"
-            keyboardType="email-address"
+            label={t('auth.phone')}
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="+852 0000 0000"
+            keyboardType="phone-pad"
             autoCapitalize="none"
             autoCorrect={false}
-            error={error && !email.trim() ? t('auth.invalidEmail') : undefined}
+            error={error && !phone.trim() ? t('auth.invalidPhone') : undefined}
           />
 
           <Input

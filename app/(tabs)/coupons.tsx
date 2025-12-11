@@ -53,6 +53,13 @@ export default function CouponsScreen() {
         ]
       );
     },
+    showVerificationRequired: () => {
+      Alert.alert(
+        t('coupons.verificationRequired'),
+        t('coupons.verificationRequiredMessage'),
+        [{ text: t('common.ok'), style: 'default' }]
+      );
+    },
   }), [t, member]);
 
   const presenter = useMemo(() => new CouponPresenter(callbacks), [callbacks]);
@@ -84,8 +91,8 @@ export default function CouponsScreen() {
 
   const handleRedeemPress = useCallback((coupon: Coupon) => {
     setSelectedCoupon(coupon);
-    presenter.onRedeemTapped(coupon);
-  }, [presenter]);
+    presenter.onRedeemTapped(coupon, member);
+  }, [presenter, member]);
 
   const renderCoupon = ({ item }: { item: Coupon }) => (
     <Card style={styles.couponCard} variant="elevated">

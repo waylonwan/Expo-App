@@ -7,6 +7,7 @@ export interface Member {
   joinDate: string;
   birthDate?: string;
   avatarUrl?: string;
+  isVerified: boolean;
 }
 
 export interface AuthTokens {

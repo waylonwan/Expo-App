@@ -83,6 +83,8 @@ export default {
     showCode: '顯示兌換碼',
     redemptionCode: '兌換碼',
     scanQR: '請在店內掃描此二維碼',
+    verificationRequired: '需要驗證會員身份',
+    verificationRequiredMessage: '未驗證會員無法兌換優惠券。請先完成會員驗證。',
   },
   settings: {
     title: '設定',

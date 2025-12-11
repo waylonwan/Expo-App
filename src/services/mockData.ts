@@ -13,6 +13,7 @@ export const mockMember: Member = {
   membershipTier: 'gold',
   joinDate: '2023-01-15',
   birthDate: '1990-05-20',
+  isVerified: true,
 };
 
 export const mockPointsBalance: PointsBalance = {

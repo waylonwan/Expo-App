@@ -83,6 +83,8 @@ export default {
     showCode: 'Show Code',
     redemptionCode: 'Redemption Code',
     scanQR: 'Scan this QR code at the store',
+    verificationRequired: 'Verification Required',
+    verificationRequiredMessage: 'Unverified members cannot redeem coupons. Please complete member verification first.',
   },
   settings: {
     title: 'Settings',

@@ -181,6 +181,11 @@ Design documentation is located in the `/docs` folder:
 
 ## Recent Changes
 
+- **2025-12-08**: Added member verification status feature
+  - Members have `isVerified` field (true/false)
+  - Unverified members cannot redeem coupons
+  - Shows alert when unverified member attempts to redeem
+  - Verification flow not yet implemented (placeholder)
 - **2025-12-08**: Updated transaction history - removed product details from purchase transactions, now only shows store location and points earned
 - **2025-12-08**: Changed login authentication from email to phone number
   - Updated LoginRequest model to use `phone` instead of `email`

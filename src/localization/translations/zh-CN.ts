@@ -83,6 +83,8 @@ export default {
     showCode: '显示兑换码',
     redemptionCode: '兑换码',
     scanQR: '请在店内扫描此二维码',
+    verificationRequired: '需要验证会员身份',
+    verificationRequiredMessage: '未验证会员无法兑换优惠券。请先完成会员验证。',
   },
   settings: {
     title: '设置',

@@ -1,5 +1,5 @@
 import { couponService } from '../services';
-import { Coupon, RedeemCouponResponse } from '../models';
+import { Coupon, RedeemCouponResponse, Member } from '../models';
 
 export interface CouponViewCallbacks {
   showLoading: () => void;
@@ -8,6 +8,7 @@ export interface CouponViewCallbacks {
   renderCoupons: (coupons: Coupon[]) => void;
   showRedeemSuccess: (response: RedeemCouponResponse) => void;
   showRedeemConfirmation: (coupon: Coupon) => void;
+  showVerificationRequired: () => void;
 }
 
 export class CouponPresenter {
@@ -53,8 +54,16 @@ export class CouponPresenter {
     }
   }
 
-  onRedeemTapped(coupon: Coupon): void {
+  onRedeemTapped(coupon: Coupon, member: Member | null): void {
+    if (!member?.isVerified) {
+      this.callbacks.showVerificationRequired();
+      return;
+    }
     this.callbacks.showRedeemConfirmation(coupon);
+  }
+
+  canRedeem(member: Member | null): boolean {
+    return member?.isVerified === true;
   }
 
   async confirmRedeem(memberId: string, coupon: Coupon): Promise<void> {

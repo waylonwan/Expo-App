@@ -10,10 +10,12 @@ export const mockMember: Member = {
   email: 'demo',
   name: '陳小明',
   phone: '+852 9123 4567',
-  membershipTier: 'gold',
   joinDate: '2023-01-15',
   birthDate: '1990-05-20',
   isVerified: true,
+  currentPoints: 2580,
+  expiringPoints: 500,
+  expiringDate: '2025-03-31',
 };
 
 export const mockPointsBalance: PointsBalance = {

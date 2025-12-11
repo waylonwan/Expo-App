@@ -21,12 +21,24 @@ export class HomePresenter {
     this.callbacks.renderMember(member);
 
     try {
-      const response = await pointsService.getPointsBalance();
-
-      if (response.success && response.data) {
-        this.callbacks.renderPoints(response.data);
+      // 優先使用 Member 中的積分資料（來自後端登入回應）
+      if (member.currentPoints !== undefined) {
+        const pointsFromMember: PointsBalance = {
+          currentPoints: member.currentPoints,
+          lifetimePoints: 0, // 後端暫無此欄位
+          expiringPoints: member.expiringPoints || 0,
+          expiryDate: member.expiringDate,
+        };
+        this.callbacks.renderPoints(pointsFromMember);
       } else {
-        this.callbacks.showError(response.error?.message || 'errors.unknownError');
+        // 如果 Member 沒有積分資料，則從 pointsService 取得
+        const response = await pointsService.getPointsBalance();
+
+        if (response.success && response.data) {
+          this.callbacks.renderPoints(response.data);
+        } else {
+          this.callbacks.showError(response.error?.message || 'errors.unknownError');
+        }
       }
     } catch (error) {
       this.callbacks.showError('errors.networkError');
@@ -45,7 +57,8 @@ export class HomePresenter {
   }
 
   getMemberTierLabel(tier: Member['membershipTier']): string {
-    const tierLabels: Record<Member['membershipTier'], string> = {
+    if (!tier) return '';
+    const tierLabels: Record<NonNullable<Member['membershipTier']>, string> = {
       standard: 'Standard',
       silver: 'Silver',
       gold: 'Gold',

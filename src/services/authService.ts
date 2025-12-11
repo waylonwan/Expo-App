@@ -12,6 +12,49 @@ import { isDemoAccount, mockMember, DEMO_CREDENTIALS } from './mockData';
 
 const DEMO_TOKEN = 'demo-access-token-12345';
 
+/**
+ * 後端 API 回應格式
+ * [{"RTN_CODE":"OK","RTN_HEADER":"LOGIN","RTN_DATA":{...}}]
+ */
+interface BackendApiResponse {
+  RTN_CODE: 'OK' | 'ERR';
+  RTN_HEADER: string;
+  RTN_DATA: any;
+}
+
+/**
+ * 後端會員資料格式 (mdlMember)
+ */
+interface BackendMember {
+  memberId: string;
+  memberNo: string;
+  name: string;
+  phone: string;
+  email: string;
+  memberLevel: string;
+  currentPoints: number;
+  expiringPoints: number;
+  expiringDate: string;
+  joinDate: string;
+}
+
+/**
+ * 將後端 Member 轉換為 App Member
+ */
+function transformBackendMember(backendMember: BackendMember): Member {
+  return {
+    id: backendMember.memberId,
+    name: backendMember.name,
+    phone: backendMember.phone,
+    email: backendMember.email,
+    joinDate: backendMember.joinDate,
+    isVerified: true,
+    currentPoints: backendMember.currentPoints,
+    expiringPoints: backendMember.expiringPoints,
+    expiringDate: backendMember.expiringDate,
+  };
+}
+
 type DemoResetCallback = () => void;
 
 class AuthService {
@@ -45,18 +88,64 @@ class AuthService {
       };
     }
 
-    const response = await apiClient.post<LoginResponse>(
-      '/auth/login',
-      credentials,
+    // 呼叫後端 API，使用 query parameters
+    // 端點: /ctlCRMAppAPI?action=login&phone=xxx&password=xxx
+    const response = await apiClient.get<BackendApiResponse[]>(
+      '/ctlCRMAppAPI',
+      {
+        action: 'login',
+        phone: credentials.phone,
+        password: credentials.password,
+      },
       false
     );
 
     if (response.success && response.data) {
-      this.isDemoMode = false;
-      await apiClient.setAuthToken(response.data.tokens.accessToken);
+      // 解析後端回應格式: [{"RTN_CODE":"OK","RTN_HEADER":"LOGIN","RTN_DATA":{...}}]
+      const backendResponse = Array.isArray(response.data) 
+        ? response.data[0] 
+        : response.data;
+
+      if (backendResponse.RTN_CODE === 'OK') {
+        const rtnData = backendResponse.RTN_DATA;
+        const backendMember: BackendMember = rtnData.member;
+        const token: string = rtnData.token;
+
+        // 轉換為 App 格式
+        const member = transformBackendMember(backendMember);
+        
+        this.isDemoMode = false;
+        await apiClient.setAuthToken(token);
+
+        return {
+          success: true,
+          data: {
+            member,
+            tokens: {
+              accessToken: token,
+              expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+            },
+          },
+        };
+      } else {
+        // 後端回傳錯誤
+        return {
+          success: false,
+          error: {
+            code: 'LOGIN_FAILED',
+            message: backendResponse.RTN_DATA || '登入失敗',
+          },
+        };
+      }
     }
 
-    return response;
+    return {
+      success: false,
+      error: response.error || {
+        code: 'UNKNOWN_ERROR',
+        message: '登入時發生未知錯誤',
+      },
+    };
   }
 
   async register(data: RegisterRequest): Promise<ApiResponse<RegisterResponse>> {

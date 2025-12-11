@@ -8,7 +8,7 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = 'https://api.example.com/v1';
+    this.baseUrl = 'https://crmapp.baleno.com.hk:37210/wCRM';
   }
 
   setBaseUrl(url: string): void {

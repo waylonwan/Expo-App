@@ -3,11 +3,15 @@ export interface Member {
   email: string;
   name: string;
   phone?: string;
-  membershipTier: 'standard' | 'silver' | 'gold' | 'platinum';
+  membershipTier?: 'standard' | 'silver' | 'gold' | 'platinum';
   joinDate: string;
   birthDate?: string;
   avatarUrl?: string;
   isVerified: boolean;
+  // Additional fields from backend
+  currentPoints?: number;
+  expiringPoints?: number;
+  expiringDate?: string;
 }
 
 export interface AuthTokens {

@@ -59,7 +59,9 @@ class ApiClient {
     const { method, endpoint, body, params, requiresAuth = true } = config;
 
     try {
-      const url = new URL(endpoint, this.baseUrl);
+      // 正確構建 URL：將 endpoint 附加到 baseUrl 後面，而不是替換路徑
+      const fullUrl = this.baseUrl + endpoint;
+      const url = new URL(fullUrl);
 
       if (params) {
         Object.entries(params).forEach(([key, value]) => {

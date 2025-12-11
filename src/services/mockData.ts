@@ -1,22 +1,4 @@
-import { Member, PointsBalance, Transaction, Coupon } from '../models';
-
-export const DEMO_CREDENTIALS = {
-  phone: '+852 0000 0000',
-  password: 'demo',
-};
-
-export const mockMember: Member = {
-  id: 'demo-member-001',
-  email: 'demo',
-  name: '陳小明',
-  phone: '+852 9123 4567',
-  joinDate: '2023-01-15',
-  birthDate: '1990-05-20',
-  isVerified: true,
-  currentPoints: 2580,
-  expiringPoints: 500,
-  expiringDate: '2025-03-31',
-};
+import { PointsBalance, Transaction, Coupon } from '../models';
 
 export const mockPointsBalance: PointsBalance = {
   currentPoints: 2580,
@@ -199,8 +181,4 @@ export function generateRedemptionCode(): string {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
-}
-
-export function isDemoAccount(phone: string, password: string): boolean {
-  return (phone === DEMO_CREDENTIALS.phone || phone === 'demo') && password === DEMO_CREDENTIALS.password;
 }

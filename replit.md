@@ -143,20 +143,11 @@ To connect Expo Go on your mobile device:
 - Theme follows system preference (light/dark)
 - Push notification permission handled on first launch
 
-## Demo Account
+## Authentication
 
-For testing the app without a backend, use:
-- **Phone**: `+852 0000 0000` (or `demo` as shortcut)
-- **Password**: `demo`
+All login requests are sent to the backend API. There is no demo mode - authentication always requires a valid backend connection.
 
-This demo account provides:
-- Mock member profile (陳小明)
-- 2,580 current points with 500 expiring
-- 10 sample transactions
-- 5 available coupons to redeem
-- 2 previously redeemed coupons
-
-**Note**: Login now uses phone number authentication instead of email.
+**Note**: Login uses phone number authentication.
 
 ## Navigation Flow
 
@@ -181,6 +172,7 @@ Design documentation is located in the `/docs` folder:
 
 ## Recent Changes
 
+- **2025-12-08**: Removed demo mode - all logins now require API call to backend
 - **2025-12-08**: Added member verification status feature
   - Members have `isVerified` field (true/false)
   - Unverified members cannot redeem coupons

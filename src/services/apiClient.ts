@@ -69,6 +69,8 @@ class ApiClient {
         });
       }
 
+      console.log('[ApiClient] 發送請求:', method, url.toString());
+
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -81,11 +83,15 @@ class ApiClient {
         }
       }
 
+      console.log('[ApiClient] 請求 Headers:', JSON.stringify(headers, null, 2));
+
       const response = await fetch(url.toString(), {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
       });
+      
+      console.log('[ApiClient] 回應狀態:', response.status, response.statusText);
 
       if (response.status === 401) {
         await this.clearAuthToken();
@@ -116,7 +122,8 @@ class ApiClient {
         data: data as T,
       };
     } catch (error) {
-      console.error('API request error:', error);
+      console.error('[ApiClient] API 請求錯誤:', error);
+      console.error('[ApiClient] 錯誤詳情:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
 
       if (error instanceof TypeError && error.message.includes('Network')) {
         return {

@@ -49,6 +49,9 @@ function transformBackendMember(backendMember: BackendMember): Member {
 
 class AuthService {
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
+    console.log('[AuthService] 開始登入，電話:', credentials.phone);
+    console.log('[AuthService] API Base URL:', apiClient.getBaseUrl());
+    
     // 呼叫後端 API，使用 query parameters
     // 端點: /ctlCRMAppAPI?action=login&phone=xxx&password=xxx
     const response = await apiClient.get<BackendApiResponse[]>(
@@ -61,21 +64,33 @@ class AuthService {
       false
     );
 
+    console.log('[AuthService] API 回應:', JSON.stringify(response, null, 2));
+
     if (response.success && response.data) {
+      console.log('[AuthService] API 請求成功，處理回應數據...');
+      
       // 解析後端回應格式: [{"RTN_CODE":"OK","RTN_HEADER":"LOGIN","RTN_DATA":{...}}]
       const backendResponse = Array.isArray(response.data) 
         ? response.data[0] 
         : response.data;
 
+      console.log('[AuthService] 解析後的回應:', JSON.stringify(backendResponse, null, 2));
+
       if (backendResponse.RTN_CODE === 'OK') {
         const rtnData = backendResponse.RTN_DATA;
+        console.log('[AuthService] RTN_DATA:', JSON.stringify(rtnData, null, 2));
+        
         const backendMember: BackendMember = rtnData.member;
         const token: string = rtnData.token;
+
+        console.log('[AuthService] 會員資料:', JSON.stringify(backendMember, null, 2));
+        console.log('[AuthService] Token:', token ? '已取得' : '無');
 
         // 轉換為 App 格式
         const member = transformBackendMember(backendMember);
         
         await apiClient.setAuthToken(token);
+        console.log('[AuthService] 登入成功！');
 
         return {
           success: true,
@@ -89,6 +104,7 @@ class AuthService {
         };
       } else {
         // 後端回傳錯誤
+        console.log('[AuthService] 後端回傳錯誤:', backendResponse.RTN_DATA);
         return {
           success: false,
           error: {
@@ -99,6 +115,7 @@ class AuthService {
       }
     }
 
+    console.log('[AuthService] API 請求失敗:', JSON.stringify(response.error, null, 2));
     return {
       success: false,
       error: response.error || {

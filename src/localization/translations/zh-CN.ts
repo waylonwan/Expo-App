@@ -101,6 +101,11 @@ export default {
     privacyPolicy: '隐私政策',
     termsOfService: '服务条款',
     help: '帮助与支持',
+    gender: '性别',
+    male: '男',
+    female: '女',
+    other: '其他',
+    birthday: '生日',
   },
   languages: {
     'zh-HK': '繁體中文',

@@ -37,6 +37,12 @@ interface BackendMember {
  */
 function transformBackendMember(backendMember: BackendMember): Member {
   const phone = String(backendMember.CUSTOMER_TEL || '');
+  // 性別：後端 0=男, 1=女, 2=其他
+  let gender: 'male' | 'female' | 'other' | undefined;
+  if (backendMember.CUSTOMER_SEX === '0') gender = 'male';
+  else if (backendMember.CUSTOMER_SEX === '1') gender = 'female';
+  else if (backendMember.CUSTOMER_SEX === '2') gender = 'other';
+  
   return {
     id: phone,
     name: backendMember.CUSTOMER_NAME || '',
@@ -44,6 +50,7 @@ function transformBackendMember(backendMember: BackendMember): Member {
     email: backendMember.EMAIL || '',
     joinDate: backendMember.SYS_DATE || '',
     birthDate: backendMember.BIRTHDAY || '',
+    gender: gender,
     isVerified: true,
   };
 }

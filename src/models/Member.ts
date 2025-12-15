@@ -6,6 +6,7 @@ export interface Member {
   membershipTier?: 'standard' | 'silver' | 'gold' | 'platinum';
   joinDate: string;
   birthDate?: string;
+  gender?: 'male' | 'female' | 'other';
   avatarUrl?: string;
   isVerified: boolean;
   // Additional fields from backend

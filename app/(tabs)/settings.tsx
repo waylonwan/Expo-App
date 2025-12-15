@@ -149,14 +149,6 @@ export default function SettingsScreen() {
       <ThemedText style={styles.sectionTitle}>{t('settings.personalInfo')}</ThemedText>
 
       <Card style={styles.settingsCard}>
-        {renderSettingRow(
-          'mail-outline',
-          t('auth.email'),
-          member?.email
-        )}
-        
-        <View style={styles.divider} />
-        
         {member?.phone && renderSettingRow(
           'call-outline',
           t('auth.phone'),
@@ -164,6 +156,30 @@ export default function SettingsScreen() {
         )}
         
         {member?.phone && <View style={styles.divider} />}
+        
+        {member?.gender && renderSettingRow(
+          'person-outline',
+          t('settings.gender'),
+          member.gender === 'male' ? t('settings.male') : member.gender === 'female' ? t('settings.female') : t('settings.other')
+        )}
+        
+        {member?.gender && <View style={styles.divider} />}
+        
+        {member?.birthDate && renderSettingRow(
+          'gift-outline',
+          t('settings.birthday'),
+          member.birthDate
+        )}
+        
+        {member?.birthDate && <View style={styles.divider} />}
+        
+        {member?.email && renderSettingRow(
+          'mail-outline',
+          t('auth.email'),
+          member.email
+        )}
+        
+        {member?.email && <View style={styles.divider} />}
         
         {renderSettingRow(
           'calendar-outline',

@@ -172,6 +172,11 @@ Design documentation is located in the `/docs` folder:
 
 ## Recent Changes
 
+- **2025-12-15**: Fixed member data display
+  - Fixed API URL construction to include /wCRM path
+  - Fixed backend member JSON string parsing with JSON.parse()
+  - Added gender and birthday fields to settings page
+  - Added translations for gender (male/female/other) and birthday
 - **2025-12-08**: Removed demo mode - all logins now require API call to backend
 - **2025-12-08**: Added member verification status feature
   - Members have `isVerified` field (true/false)

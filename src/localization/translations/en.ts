@@ -101,6 +101,11 @@ export default {
     privacyPolicy: 'Privacy Policy',
     termsOfService: 'Terms of Service',
     help: 'Help & Support',
+    gender: 'Gender',
+    male: 'Male',
+    female: 'Female',
+    other: 'Other',
+    birthday: 'Birthday',
   },
   languages: {
     'zh-HK': 'Traditional Chinese',

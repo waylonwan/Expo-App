@@ -23,23 +23,24 @@ interface BackendApiResponse {
  * 後端會員資料格式 (mdlCRM_VIP) - 欄位名與 CRM_VIP 表一致
  */
 interface BackendMember {
-  CUSTOMER_TEL: string;     // 手機號碼 (作為會員ID)
-  CUSTOMER_NAME: string;    // 姓名
-  CUSTOMER_SEX: string;     // 性別 0:男 1:女
-  BIRTHDAY: string;         // 生日
-  EMAIL: string;            // 電郵
-  SYS_DATE: string;         // 註冊日期
-  MEMBER_NO?: string;       // 會員編號
+  CUSTOMER_TEL: string | number;  // 手機號碼 (可能是數字或字串)
+  CUSTOMER_NAME: string;          // 姓名
+  CUSTOMER_SEX: string;           // 性別 0:男 1:女
+  BIRTHDAY: string;               // 生日
+  EMAIL: string;                  // 電郵
+  SYS_DATE: string;               // 註冊日期
+  MEMBER_NO?: string;             // 會員編號
 }
 
 /**
  * 將後端 Member 轉換為 App Member
  */
 function transformBackendMember(backendMember: BackendMember): Member {
+  const phone = String(backendMember.CUSTOMER_TEL || '');
   return {
-    id: backendMember.CUSTOMER_TEL,
+    id: phone,
     name: backendMember.CUSTOMER_NAME || '',
-    phone: backendMember.CUSTOMER_TEL,
+    phone: phone,
     email: backendMember.EMAIL || '',
     joinDate: backendMember.SYS_DATE || '',
     birthDate: backendMember.BIRTHDAY || '',
@@ -80,10 +81,16 @@ class AuthService {
         const rtnData = backendResponse.RTN_DATA;
         console.log('[AuthService] RTN_DATA:', JSON.stringify(rtnData, null, 2));
         
-        const backendMember: BackendMember = rtnData.member;
+        // 後端返回的 member 是 JSON 字串，需要解析
+        let backendMember: BackendMember;
+        if (typeof rtnData.member === 'string') {
+          backendMember = JSON.parse(rtnData.member);
+        } else {
+          backendMember = rtnData.member;
+        }
         const token: string = rtnData.token;
 
-        console.log('[AuthService] 會員資料:', JSON.stringify(backendMember, null, 2));
+        console.log('[AuthService] 會員資料 (解析後):', JSON.stringify(backendMember, null, 2));
         console.log('[AuthService] Token:', token ? '已取得' : '無');
 
         // 轉換為 App 格式

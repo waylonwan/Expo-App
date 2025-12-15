@@ -172,7 +172,9 @@ Design documentation is located in the `/docs` folder:
 
 ## Recent Changes
 
-- **2025-12-15**: Fixed member data display
+- **2025-12-15**: Fixed logout and settings page issues
+  - Fixed "Loading" stuck after logout - home screen now clears state when user logs out
+  - Fixed "Unexpected text node" error in settings - changed conditional rendering from `&&` to ternary operators
   - Fixed API URL construction to include /wCRM path
   - Fixed backend member JSON string parsing with JSON.parse()
   - Added gender and birthday fields to settings page

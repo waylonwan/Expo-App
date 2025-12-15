@@ -39,6 +39,10 @@ export default function HomeScreen() {
     if (member && isAuthenticated) {
       setIsLoading(true);
       presenter.loadHomeData(member);
+    } else if (!isAuthenticated) {
+      setIsLoading(false);
+      setPointsBalance(null);
+      setDisplayedMember(null);
     }
   }, [member, isAuthenticated, presenter]);
 

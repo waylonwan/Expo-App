@@ -149,37 +149,37 @@ export default function SettingsScreen() {
       <ThemedText style={styles.sectionTitle}>{t('settings.personalInfo')}</ThemedText>
 
       <Card style={styles.settingsCard}>
-        {member?.phone && renderSettingRow(
+        {member?.phone ? renderSettingRow(
           'call-outline',
           t('auth.phone'),
           member.phone
-        )}
+        ) : null}
         
-        {member?.phone && <View style={styles.divider} />}
+        {member?.phone ? <View style={styles.divider} /> : null}
         
-        {member?.gender && renderSettingRow(
+        {member?.gender ? renderSettingRow(
           'person-outline',
           t('settings.gender'),
           member.gender === 'male' ? t('settings.male') : member.gender === 'female' ? t('settings.female') : t('settings.other')
-        )}
+        ) : null}
         
-        {member?.gender && <View style={styles.divider} />}
+        {member?.gender ? <View style={styles.divider} /> : null}
         
-        {member?.birthDate && renderSettingRow(
+        {member?.birthDate ? renderSettingRow(
           'gift-outline',
           t('settings.birthday'),
           member.birthDate
-        )}
+        ) : null}
         
-        {member?.birthDate && <View style={styles.divider} />}
+        {member?.birthDate ? <View style={styles.divider} /> : null}
         
-        {member?.email && renderSettingRow(
+        {member?.email ? renderSettingRow(
           'mail-outline',
           t('auth.email'),
           member.email
-        )}
+        ) : null}
         
-        {member?.email && <View style={styles.divider} />}
+        {member?.email ? <View style={styles.divider} /> : null}
         
         {renderSettingRow(
           'calendar-outline',

@@ -100,7 +100,7 @@ export default function HomeScreen() {
     );
   }
 
-  if (isLoading && !pointsBalance) {
+  if (isAuthenticated && isLoading && !pointsBalance) {
     return <LoadingOverlay visible={true} />;
   }
 

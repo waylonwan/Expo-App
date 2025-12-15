@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,6 +35,21 @@ export default function SettingsScreen() {
       router.replace('/(tabs)' as any);
     },
     showLogoutConfirmation: () => {
+      // Web 平台使用 window.confirm
+      if (Platform.OS === 'web') {
+        const confirmed = window.confirm(t('auth.logoutConfirm'));
+        if (confirmed) {
+          (async () => {
+            setIsLoading(true);
+            await logout();
+            setIsLoading(false);
+            router.replace('/(tabs)' as any);
+          })();
+        }
+        return;
+      }
+      
+      // 原生平台使用 Alert.alert
       Alert.alert(
         t('auth.logout'),
         t('auth.logoutConfirm'),

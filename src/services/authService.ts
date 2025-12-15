@@ -168,7 +168,7 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await apiClient.post("/auth/logout", {}, true);
+      await apiClient.post("/ctlCRMAppAPI", { action: "logout" }, true);
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {

@@ -30,19 +30,27 @@ export default function HomeScreen() {
     },
     showError: (message: string) => setError(t(message) || message),
     renderPoints: (balance: PointsBalance) => setPointsBalance(balance),
-    renderMember: (member: Member) => setDisplayedMember(member),
+    renderMember: (memberData: Member) => setDisplayedMember(memberData),
   }), [t]);
 
+  // 每次 callbacks 變化時重新建立 presenter
   const presenter = useMemo(() => new HomePresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    if (member && isAuthenticated) {
-      setIsLoading(true);
-      presenter.loadHomeData(member);
-    } else if (!isAuthenticated) {
+    // 重置狀態
+    if (!isAuthenticated) {
       setIsLoading(false);
       setPointsBalance(null);
       setDisplayedMember(null);
+      setError(null);
+      return;
+    }
+    
+    // 已登入且有會員資料時載入
+    if (member && isAuthenticated) {
+      setIsLoading(true);
+      setError(null);
+      presenter.loadHomeData(member);
     }
   }, [member, isAuthenticated, presenter]);
 

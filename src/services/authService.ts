@@ -23,19 +23,16 @@ interface BackendApiResponse {
 }
 
 /**
- * 後端會員資料格式 (mdlMember)
+ * 後端會員資料格式 (mdlCRM_VIP) - 欄位名與 CRM_VIP 表一致
  */
 interface BackendMember {
-  memberId: string;
-  memberNo: string;
-  name: string;
-  phone: string;
-  email: string;
-  memberLevel: string;
-  currentPoints: number;
-  expiringPoints: number;
-  expiringDate: string;
-  joinDate: string;
+  CUSTOMER_TEL: string;     // 手機號碼 (作為會員ID)
+  CUSTOMER_NAME: string;    // 姓名
+  CUSTOMER_SEX: string;     // 性別 0:男 1:女
+  BIRTHDAY: string;         // 生日
+  EMAIL: string;            // 電郵
+  SYS_DATE: string;         // 註冊日期
+  MEMBER_NO?: string;       // 會員編號
 }
 
 /**
@@ -43,15 +40,13 @@ interface BackendMember {
  */
 function transformBackendMember(backendMember: BackendMember): Member {
   return {
-    id: backendMember.memberId,
-    name: backendMember.name,
-    phone: backendMember.phone,
-    email: backendMember.email,
-    joinDate: backendMember.joinDate,
+    id: backendMember.CUSTOMER_TEL,
+    name: backendMember.CUSTOMER_NAME || '',
+    phone: backendMember.CUSTOMER_TEL,
+    email: backendMember.EMAIL || '',
+    joinDate: backendMember.SYS_DATE || '',
+    birthDate: backendMember.BIRTHDAY || '',
     isVerified: true,
-    currentPoints: backendMember.currentPoints,
-    expiringPoints: backendMember.expiringPoints,
-    expiringDate: backendMember.expiringDate,
   };
 }
 

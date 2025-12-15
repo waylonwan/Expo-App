@@ -22,8 +22,11 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [member, setMember] = useState<Member | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
 
   const checkAuth = useCallback(async () => {
+    if (initialCheckDone) return;
+    
     try {
       const hasToken = await authService.checkAuthToken();
       
@@ -43,8 +46,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setMember(null);
     } finally {
       setIsLoading(false);
+      setInitialCheckDone(true);
     }
-  }, []);
+  }, [initialCheckDone]);
 
   useEffect(() => {
     checkAuth();
@@ -105,11 +109,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async (): Promise<void> => {
     try {
-      setIsLoading(true);
       await authService.logout();
       setMember(null);
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+      setMember(null);
     }
   };
 

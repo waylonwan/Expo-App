@@ -42,7 +42,7 @@ export default function SettingsScreen() {
           (async () => {
             setIsLoading(true);
             await logout();
-            setIsLoading(false);
+            // 不需要 setIsLoading(false)，跳轉後組件會卸載
             router.replace('/(tabs)' as any);
           })();
         }
@@ -61,7 +61,7 @@ export default function SettingsScreen() {
             onPress: async () => {
               setIsLoading(true);
               await logout();
-              setIsLoading(false);
+              // 不需要 setIsLoading(false)，跳轉後組件會卸載
               router.replace('/(tabs)' as any);
             },
           },
@@ -123,7 +123,7 @@ export default function SettingsScreen() {
   );
 
   if (!isAuthenticated) {
-    return <LoadingOverlay visible={true} />;
+    return null;  // useEffect 會處理跳轉，不需要顯示 LoadingOverlay
   }
 
   return (

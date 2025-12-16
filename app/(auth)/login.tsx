@@ -44,10 +44,15 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     const result = await login(phone.trim(), password);
+    
+    // 先關閉 loading，等待 React 更新後再導航
     setIsLoading(false);
 
     if (result.success) {
-      router.replace('/(tabs)');
+      // 使用 setTimeout 確保 LoadingOverlay 關閉後再導航
+      setTimeout(() => {
+        router.replace('/(tabs)');
+      }, 100);
     } else {
       setError(result.error || t('auth.loginFailed'));
       Alert.alert(t('common.error'), result.error || t('auth.loginFailed'));

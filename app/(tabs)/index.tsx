@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Modal, Dimensions, Text, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -16,19 +16,25 @@ export default function HomeScreen() {
   const { member, isAuthenticated, isLoading: authLoading } = useAuth();
   const [pointsBalance, setPointsBalance] = useState<PointsBalance | null>(null);
   const [displayedMember, setDisplayedMember] = useState<Member | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  
+  const loadedMemberIdRef = useRef<string | null>(null);
 
   // 載入首頁資料
   const loadHomeData = useCallback((memberData: Member) => {
+    if (loadedMemberIdRef.current === memberData.id) {
+      console.log('[HomeScreen] Data already loaded for this member, skipping');
+      return;
+    }
+    
     console.log('[HomeScreen] loadHomeData called');
+    loadedMemberIdRef.current = memberData.id;
     setDisplayedMember(memberData);
     setError(null);
 
-    // 優先使用 Member 中的積分資料（來自後端登入回應）
     if (memberData.currentPoints !== undefined) {
       setPointsBalance({
         currentPoints: memberData.currentPoints,
@@ -37,7 +43,6 @@ export default function HomeScreen() {
         expiryDate: memberData.expiringDate,
       });
     } else {
-      // 後端沒有積分資料，使用預設值
       setPointsBalance({
         currentPoints: 0,
         lifetimePoints: 0,
@@ -46,38 +51,29 @@ export default function HomeScreen() {
       });
     }
     setDataLoaded(true);
-    setIsLoading(false);
     setIsRefreshing(false);
-    console.log('[HomeScreen] loadHomeData completed, isLoading set to false');
+    console.log('[HomeScreen] loadHomeData completed');
   }, []);
 
   useEffect(() => {
-    console.log('[HomeScreen] useEffect', { isAuthenticated, hasMember: !!member, dataLoaded });
-    
-    // 登出時重置狀態
     if (!isAuthenticated) {
-      setIsLoading(false);
       setPointsBalance(null);
       setDisplayedMember(null);
       setError(null);
       setDataLoaded(false);
+      loadedMemberIdRef.current = null;
       return;
     }
     
-    // 已登入、有會員資料、且尚未載入時
-    if (member && isAuthenticated && !dataLoaded) {
-      console.log('[HomeScreen] Loading home data');
-      setIsLoading(true);
-      // 使用 setTimeout 確保 isLoading 狀態已更新後再執行
-      setTimeout(() => {
-        loadHomeData(member);
-      }, 0);
+    if (member && !dataLoaded) {
+      loadHomeData(member);
     }
   }, [member, isAuthenticated, dataLoaded, loadHomeData]);
 
   const handleRefresh = useCallback(() => {
     if (!isAuthenticated || !member) return;
     setIsRefreshing(true);
+    loadedMemberIdRef.current = null;
     loadHomeData(member);
   }, [member, isAuthenticated, loadHomeData]);
 
@@ -94,7 +90,7 @@ export default function HomeScreen() {
     router.push('/(auth)/login' as any);
   };
 
-  console.log('[HomeScreen] render', { isAuthenticated, isLoading, hasPointsBalance: !!pointsBalance, authLoading });
+  console.log('[HomeScreen] render', { isAuthenticated, dataLoaded, hasPointsBalance: !!pointsBalance, authLoading });
 
   if (authLoading) {
     console.log('[HomeScreen] showing authLoading overlay');

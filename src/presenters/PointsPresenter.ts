@@ -97,12 +97,9 @@ export class PointsPresenter {
   }
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    // 後端格式: 2025.12.12 17:45
+    // 直接返回原始格式，已經是易讀的格式
+    return dateString;
   }
 
   getTransactionTypeKey(type: Transaction['type']): string {

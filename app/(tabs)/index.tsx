@@ -48,6 +48,7 @@ export default function HomeScreen() {
     setDataLoaded(true);
     setIsLoading(false);
     setIsRefreshing(false);
+    console.log('[HomeScreen] loadHomeData completed, isLoading set to false');
   }, []);
 
   useEffect(() => {
@@ -67,7 +68,10 @@ export default function HomeScreen() {
     if (member && isAuthenticated && !dataLoaded) {
       console.log('[HomeScreen] Loading home data');
       setIsLoading(true);
-      loadHomeData(member);
+      // 使用 setTimeout 確保 isLoading 狀態已更新後再執行
+      setTimeout(() => {
+        loadHomeData(member);
+      }, 0);
     }
   }, [member, isAuthenticated, dataLoaded, loadHomeData]);
 
@@ -90,7 +94,10 @@ export default function HomeScreen() {
     router.push('/(auth)/login' as any);
   };
 
+  console.log('[HomeScreen] render', { isAuthenticated, isLoading, hasPointsBalance: !!pointsBalance, authLoading });
+
   if (authLoading) {
+    console.log('[HomeScreen] showing authLoading overlay');
     return <LoadingOverlay visible={true} />;
   }
 
@@ -132,7 +139,8 @@ export default function HomeScreen() {
     );
   }
 
-  if (isAuthenticated && isLoading && !pointsBalance) {
+  // 簡化：只用 dataLoaded 判斷是否顯示載入中
+  if (!dataLoaded) {
     return <LoadingOverlay visible={true} />;
   }
 

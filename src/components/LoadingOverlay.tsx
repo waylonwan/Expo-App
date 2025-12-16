@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet, Modal } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { ThemedText } from '../../components/ThemedText';
 import { useTranslation } from 'react-i18next';
 
@@ -11,26 +11,29 @@ interface LoadingOverlayProps {
 export function LoadingOverlay({ visible, message }: LoadingOverlayProps) {
   const { t } = useTranslation();
 
+  if (!visible) {
+    return null;
+  }
+
   return (
-    <Modal transparent visible={visible} animationType="fade">
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <ActivityIndicator size="large" color="#E31837" />
-          <ThemedText style={styles.text}>
-            {message || t('common.loading')}
-          </ThemedText>
-        </View>
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <ActivityIndicator size="large" color="#E31837" />
+        <ThemedText style={styles.text}>
+          {message || t('common.loading')}
+        </ThemedText>
       </View>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    zIndex: 1000,
   },
   content: {
     backgroundColor: 'white',

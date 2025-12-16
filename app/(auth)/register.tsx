@@ -14,6 +14,7 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [birthday, setBirthday] = useState('');
+  const [gender, setGender] = useState<'1' | '2' | ''>('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +48,10 @@ export default function RegisterScreen() {
       newErrors.birthday = t('auth.invalidBirthday');
     }
 
+    if (!gender) {
+      newErrors.gender = t('auth.invalidGender');
+    }
+
     if (email.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
@@ -64,7 +69,7 @@ export default function RegisterScreen() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [name, email, phone, birthday, password, confirmPassword, t]);
+  }, [name, email, phone, birthday, gender, password, confirmPassword, t]);
 
   const handleRegister = useCallback(async () => {
     if (!validateForm()) {
@@ -77,6 +82,7 @@ export default function RegisterScreen() {
       password,
       name.trim(),
       birthday,
+      gender as '1' | '2',
       email.trim() || undefined
     );
     setIsLoading(false);
@@ -86,7 +92,7 @@ export default function RegisterScreen() {
     } else {
       showAlert(t('common.error'), result.error || t('auth.registerFailed'));
     }
-  }, [validateForm, phone, password, name, birthday, email, register, t, showAlert]);
+  }, [validateForm, phone, password, name, birthday, gender, email, register, t, showAlert]);
 
   const handleDateConfirm = () => {
     const formattedDate = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
@@ -152,6 +158,47 @@ export default function RegisterScreen() {
               />
             </View>
           </TouchableOpacity>
+
+          <View style={styles.genderContainer}>
+            <ThemedText style={styles.genderLabel}>{t('auth.gender')}</ThemedText>
+            <View style={styles.genderOptions}>
+              <TouchableOpacity
+                style={[
+                  styles.genderOption,
+                  gender === '1' && styles.genderOptionSelected,
+                ]}
+                onPress={() => setGender('1')}
+              >
+                <ThemedText
+                  style={[
+                    styles.genderOptionText,
+                    gender === '1' && styles.genderOptionTextSelected,
+                  ]}
+                >
+                  {t('settings.male')}
+                </ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderOption,
+                  gender === '2' && styles.genderOptionSelected,
+                ]}
+                onPress={() => setGender('2')}
+              >
+                <ThemedText
+                  style={[
+                    styles.genderOptionText,
+                    gender === '2' && styles.genderOptionTextSelected,
+                  ]}
+                >
+                  {t('settings.female')}
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
+            {errors.gender ? (
+              <ThemedText style={styles.errorText}>{errors.gender}</ThemedText>
+            ) : null}
+          </View>
 
           <Input
             label={t('auth.emailOptional')}
@@ -430,6 +477,46 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontSize: 16,
     fontWeight: '600',
+  },
+  genderContainer: {
+    marginBottom: 16,
+  },
+  genderLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  genderOptions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  genderOption: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  genderOptionSelected: {
+    borderColor: '#E31837',
+    backgroundColor: '#FEF2F2',
+  },
+  genderOptionText: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  genderOptionTextSelected: {
+    color: '#E31837',
+    fontWeight: '600',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 12,
+    marginTop: 4,
   },
   datePickerConfirmButton: {
     flex: 1,

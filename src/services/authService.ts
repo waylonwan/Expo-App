@@ -159,11 +159,12 @@ class AuthService {
     const response = await apiClient.post<BackendApiResponse[]>(
       "/ctlCRMAppAPI/register",
       {
-        phone: data.phone,
-        password: data.password,
-        name: data.name,
-        birthday: data.birthday,
-        email: data.email || "",
+        CUSTOMER_TEL: data.phone,
+        PASSWORD: data.password,
+        CUSTOMER_NAME: data.name,
+        BIRTHDAY: data.birthday,
+        CUSTOMER_SEX: data.gender,
+        EMAIL: data.email || "",
       },
       false,
     );

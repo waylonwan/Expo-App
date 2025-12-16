@@ -31,6 +31,7 @@ export interface RegisterRequest {
   password: string;
   name: string;
   birthday: string;
+  gender: '1' | '2';
   email?: string;
 }
 

@@ -176,8 +176,9 @@ Design documentation is located in the `/docs` folder:
   - Changed "電話號碼" to "手機號碼" (Mobile Number)
   - Phone input now accepts exactly 8 digits only (no +852 prefix)
   - Added birthday field (required) to registration
+  - Added gender field (required) to registration - 1:男 2:女
   - Made email field optional during registration
-  - Updated registration API to use `/ctlCRMAppAPI/register` endpoint
+  - Updated registration API to use `/ctlCRMAppAPI/register` endpoint with backend field names (CUSTOMER_NAME, CUSTOMER_TEL, CUSTOMER_SEX, BIRTHDAY, EMAIL, PASSWORD)
   - Added cross-platform date picker for birthday selection
   - Updated translations for all 3 languages
 - **2025-12-15**: Fixed logout and settings page issues

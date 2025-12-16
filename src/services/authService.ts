@@ -30,7 +30,7 @@ interface BackendMember {
   EMAIL: string; // 電郵
   SYS_DATE: string; // 註冊日期
   MEMBER_NO?: string; // 會員編號
-  currentPoints?: number; // 當前積分
+  CurrentPoints?: number; // 當前積分 (後端欄位名為 CurrentPoints)
 }
 
 /**
@@ -52,7 +52,7 @@ function transformBackendMember(backendMember: BackendMember): Member {
     birthDate: backendMember.BIRTHDAY || "",
     gender: gender,
     isVerified: true,
-    currentPoints: backendMember.currentPoints || 0,
+    currentPoints: backendMember.CurrentPoints || 0,
   };
 }
 

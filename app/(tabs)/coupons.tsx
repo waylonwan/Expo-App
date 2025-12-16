@@ -146,7 +146,12 @@ export default function CouponsScreen() {
     </Card>
   );
 
-  if (!isAuthenticated || (isLoading && coupons.length === 0)) {
+  // 未登入時不渲染任何內容（useEffect 會處理跳轉）
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  if (isLoading && coupons.length === 0) {
     return <LoadingOverlay visible={true} />;
   }
 

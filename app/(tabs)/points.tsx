@@ -107,8 +107,9 @@ export default function PointsScreen() {
     </Card>
   );
 
+  // 未登入時不渲染任何內容（useEffect 會處理跳轉）
   if (!isAuthenticated) {
-    return <LoadingOverlay visible={true} />;
+    return null;
   }
 
   if (isLoading && transactions.length === 0) {

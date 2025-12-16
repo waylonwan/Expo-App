@@ -1,34 +1,19 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/ThemedText';
-import { Button, Input } from '@/src/components';
+import { Button, Input, useAlert } from '@/src/components';
 import { useAuth } from '@/src/contexts';
-import { AuthPresenter, AuthViewCallbacks } from '@/src/presenters';
-import { Member } from '@/src/models';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
   const { login } = useAuth();
+  const { showAlert } = useAlert();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const callbacks: AuthViewCallbacks = {
-    showLoading: () => setIsLoading(true),
-    hideLoading: () => setIsLoading(false),
-    showError: (message: string) => {
-      setError(t(message) || message);
-      Alert.alert(t('common.error'), t(message) || message);
-    },
-    onLoginSuccess: (member: Member) => {
-      router.replace('/(tabs)');
-    },
-    onRegisterSuccess: () => {},
-    onLogoutSuccess: () => {},
-  };
 
   const handleLogin = useCallback(async () => {
     setError('');
@@ -44,8 +29,6 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     const result = await login(phone.trim(), password);
-    
-    // 先關閉 loading，等待 React 更新後再導航
     setIsLoading(false);
 
     if (result.success) {
@@ -56,9 +39,9 @@ export default function LoginScreen() {
       const errorMessage = result.error || t('auth.loginFailed');
       console.log('[LoginScreen] 登入失敗，錯誤訊息:', errorMessage);
       setError(errorMessage);
-      Alert.alert(t('common.error'), errorMessage);
+      showAlert(t('common.error'), errorMessage);
     }
-  }, [phone, password, login, t]);
+  }, [phone, password, login, t, showAlert]);
 
   return (
     <KeyboardAvoidingView

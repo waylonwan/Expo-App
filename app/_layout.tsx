@@ -11,6 +11,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth, LanguageProvider } from '@/src/contexts';
 import { initializeI18n } from '@/src/localization';
 import i18n from '@/src/localization/i18n';
+import { AlertProvider } from '@/src/components';
 
 function NavigationHandler() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -54,13 +55,15 @@ function RootLayoutContent() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <AuthProvider>
           <LanguageProvider>
-            <NavigationHandler />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <StatusBar style="auto" />
+            <AlertProvider>
+              <NavigationHandler />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style="auto" />
+            </AlertProvider>
           </LanguageProvider>
         </AuthProvider>
       </ThemeProvider>

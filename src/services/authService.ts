@@ -239,7 +239,7 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await apiClient.post("/ctlCRMAppAPI", { action: "logout" }, true);
+      await apiClient.get("/ctlCRMAppAPI", { action: "logout" }, true);
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {
@@ -248,7 +248,54 @@ class AuthService {
   }
 
   async getCurrentMember(): Promise<ApiResponse<Member>> {
-    return apiClient.get<Member>("/members/me");
+    console.log("[AuthService] 取得會員資料...");
+    
+    const response = await apiClient.get<BackendApiResponse[]>(
+      "/ctlCRMAppAPI",
+      { action: "getMember" },
+      true,
+    );
+
+    if (response.success && response.data) {
+      const backendResponse = Array.isArray(response.data)
+        ? response.data[0]
+        : response.data;
+
+      if (backendResponse.RTN_CODE === "OK") {
+        const rtnData = backendResponse.RTN_DATA;
+        
+        let backendMember: BackendMember;
+        if (typeof rtnData.member === "string") {
+          backendMember = JSON.parse(rtnData.member);
+        } else {
+          backendMember = rtnData.member;
+        }
+
+        const member = transformBackendMember(backendMember);
+        console.log("[AuthService] 取得會員資料成功");
+        
+        return {
+          success: true,
+          data: member,
+        };
+      } else {
+        return {
+          success: false,
+          error: {
+            code: "GET_MEMBER_FAILED",
+            message: backendResponse.RTN_DATA || "取得會員資料失敗",
+          },
+        };
+      }
+    }
+
+    return {
+      success: false,
+      error: response.error || {
+        code: "UNKNOWN_ERROR",
+        message: "取得會員資料時發生未知錯誤",
+      },
+    };
   }
 
   async checkAuthToken(): Promise<boolean> {

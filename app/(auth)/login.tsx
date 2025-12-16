@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, Im
 import { Link, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/ThemedText';
-import { Button, Input, LoadingOverlay } from '@/src/components';
+import { Button, Input } from '@/src/components';
 import { useAuth } from '@/src/contexts';
 import { AuthPresenter, AuthViewCallbacks } from '@/src/presenters';
 import { Member } from '@/src/models';
@@ -117,8 +117,6 @@ export default function LoginScreen() {
           </View>
         </View>
       </ScrollView>
-
-      <LoadingOverlay visible={isLoading} />
     </KeyboardAvoidingView>
   );
 }

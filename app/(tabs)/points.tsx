@@ -11,7 +11,7 @@ import { PointsBalance, Transaction } from '@/src/models';
 
 export default function PointsScreen() {
   const { t } = useTranslation();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, member } = useAuth();
   const [pointsBalance, setPointsBalance] = useState<PointsBalance | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,15 +46,29 @@ export default function PointsScreen() {
   }, [isAuthenticated, authLoading]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      presenter.refresh();
+    if (isAuthenticated && member) {
+      setPointsBalance({
+        currentPoints: member.currentPoints || 0,
+        lifetimePoints: 0,
+        expiringPoints: member.expiringPoints || 0,
+        expiryDate: member.expiringDate,
+      });
+      presenter.loadTransactionHistory(true);
     }
-  }, [presenter, isAuthenticated]);
+  }, [presenter, isAuthenticated, member]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    presenter.refresh();
-  }, [presenter]);
+    if (member) {
+      setPointsBalance({
+        currentPoints: member.currentPoints || 0,
+        lifetimePoints: 0,
+        expiringPoints: member.expiringPoints || 0,
+        expiryDate: member.expiringDate,
+      });
+    }
+    presenter.loadTransactionHistory(true);
+  }, [presenter, member]);
 
   const handleLoadMore = useCallback(() => {
     if (hasMore && !isLoading) {

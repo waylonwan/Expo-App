@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Modal, Dimensions, Text, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import QRCode from 'react-native-qrcode-svg';
 import { ThemedText } from '@/components/ThemedText';
 import { Card, LoadingOverlay, Button } from '@/src/components';
 import { useAuth } from '@/src/contexts';
-import { HomePresenter, HomeViewCallbacks } from '@/src/presenters';
 import { PointsBalance, Member } from '@/src/models';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -22,19 +21,38 @@ export default function HomeScreen() {
   const [error, setError] = useState<string | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
 
-  const callbacks: HomeViewCallbacks = useMemo(() => ({
-    showLoading: () => setIsLoading(true),
-    hideLoading: () => {
+  // 載入首頁資料
+  const loadHomeData = useCallback(async (memberData: Member) => {
+    setIsLoading(true);
+    setDisplayedMember(memberData);
+    setError(null);
+
+    try {
+      // 優先使用 Member 中的積分資料（來自後端登入回應）
+      if (memberData.currentPoints !== undefined) {
+        const pointsFromMember: PointsBalance = {
+          currentPoints: memberData.currentPoints,
+          lifetimePoints: 0,
+          expiringPoints: memberData.expiringPoints || 0,
+          expiryDate: memberData.expiringDate,
+        };
+        setPointsBalance(pointsFromMember);
+      } else {
+        // 後端沒有積分資料，使用預設值
+        setPointsBalance({
+          currentPoints: 0,
+          lifetimePoints: 0,
+          expiringPoints: 0,
+          expiryDate: undefined,
+        });
+      }
+    } catch (err) {
+      setError(t('errors.networkError'));
+    } finally {
       setIsLoading(false);
       setIsRefreshing(false);
-    },
-    showError: (message: string) => setError(t(message) || message),
-    renderPoints: (balance: PointsBalance) => setPointsBalance(balance),
-    renderMember: (memberData: Member) => setDisplayedMember(memberData),
-  }), [t]);
-
-  // 每次 callbacks 變化時重新建立 presenter
-  const presenter = useMemo(() => new HomePresenter(callbacks), [callbacks]);
+    }
+  }, [t]);
 
   useEffect(() => {
     // 重置狀態
@@ -48,19 +66,24 @@ export default function HomeScreen() {
     
     // 已登入且有會員資料時載入
     if (member && isAuthenticated) {
-      setIsLoading(true);
-      setError(null);
-      presenter.loadHomeData(member);
+      loadHomeData(member);
     }
-  }, [member, isAuthenticated, presenter]);
+  }, [member, isAuthenticated, loadHomeData]);
 
   const handleRefresh = useCallback(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !member) return;
     setIsRefreshing(true);
-    if (member) {
-      presenter.loadHomeData(member);
-    }
-  }, [member, presenter, isAuthenticated]);
+    loadHomeData(member);
+  }, [member, isAuthenticated, loadHomeData]);
+
+  const formatPoints = (points: number): string => {
+    return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
 
   const handleLoginPress = () => {
     router.push('/(auth)/login' as any);
@@ -163,15 +186,15 @@ export default function HomeScreen() {
           <ThemedText style={styles.pointsLabel}>{t('home.currentPoints')}</ThemedText>
         </View>
         <Text style={styles.pointsValue}>
-          {presenter.formatPoints(pointsBalance?.currentPoints || 0)}
+          {formatPoints(pointsBalance?.currentPoints || 0)}
         </Text>
         
         {pointsBalance && pointsBalance.expiringPoints > 0 && (
           <View style={styles.expiringSection}>
             <Ionicons name="time-outline" size={16} color="#EF4444" />
             <ThemedText style={styles.expiringText}>
-              {presenter.formatPoints(pointsBalance.expiringPoints)} {t('home.expiringPoints')}
-              {pointsBalance.expiryDate && ` - ${presenter.formatDate(pointsBalance.expiryDate)}`}
+              {formatPoints(pointsBalance.expiringPoints)} {t('home.expiringPoints')}
+              {pointsBalance.expiryDate && ` - ${formatDate(pointsBalance.expiryDate)}`}
             </ThemedText>
           </View>
         )}

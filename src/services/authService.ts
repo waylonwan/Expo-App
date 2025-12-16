@@ -30,6 +30,7 @@ interface BackendMember {
   EMAIL: string; // 電郵
   SYS_DATE: string; // 註冊日期
   MEMBER_NO?: string; // 會員編號
+  currentPoints?: number; // 當前積分
 }
 
 /**
@@ -37,7 +38,7 @@ interface BackendMember {
  */
 function transformBackendMember(backendMember: BackendMember): Member {
   const phone = String(backendMember.CUSTOMER_TEL || "");
-  // 性別：後端 0=男, 1=女, 2=其他
+  // 性別：後端 1=男, 2=女
   let gender: "male" | "female" | undefined;
   if (backendMember.CUSTOMER_SEX === "1") gender = "male";
   else if (backendMember.CUSTOMER_SEX === "2") gender = "female";
@@ -51,6 +52,7 @@ function transformBackendMember(backendMember: BackendMember): Member {
     birthDate: backendMember.BIRTHDAY || "",
     gender: gender,
     isVerified: true,
+    currentPoints: backendMember.currentPoints || 0,
   };
 }
 

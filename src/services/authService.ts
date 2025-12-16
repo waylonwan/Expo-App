@@ -156,8 +156,9 @@ class AuthService {
     console.log("[AuthService] 開始註冊，電話:", data.phone);
     console.log("[AuthService] API Base URL:", apiClient.getBaseUrl());
 
+    // 使用 POST body 發送資料
     const response = await apiClient.post<BackendApiResponse[]>(
-      "/ctlCRMAppAPI/register",
+      "/ctlCRMAppAPI?action=register",
       {
         CUSTOMER_TEL: data.phone,
         PASSWORD: data.password,

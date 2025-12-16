@@ -153,17 +153,84 @@ class AuthService {
   async register(
     data: RegisterRequest,
   ): Promise<ApiResponse<RegisterResponse>> {
-    const response = await apiClient.post<RegisterResponse>(
-      "/auth/register",
-      data,
+    console.log("[AuthService] 開始註冊，電話:", data.phone);
+    console.log("[AuthService] API Base URL:", apiClient.getBaseUrl());
+
+    const response = await apiClient.post<BackendApiResponse[]>(
+      "/ctlCRMAppAPI/register",
+      {
+        phone: data.phone,
+        password: data.password,
+        name: data.name,
+        birthday: data.birthday,
+        email: data.email || "",
+      },
       false,
     );
 
+    console.log("[AuthService] 註冊 API 回應:", JSON.stringify(response, null, 2));
+
     if (response.success && response.data) {
-      await apiClient.setAuthToken(response.data.tokens.accessToken);
+      const backendResponse = Array.isArray(response.data)
+        ? response.data[0]
+        : response.data;
+
+      console.log(
+        "[AuthService] 解析後的回應:",
+        JSON.stringify(backendResponse, null, 2),
+      );
+
+      if (backendResponse.RTN_CODE === "OK") {
+        const rtnData = backendResponse.RTN_DATA;
+
+        let backendMember: BackendMember;
+        if (typeof rtnData.member === "string") {
+          backendMember = JSON.parse(rtnData.member);
+        } else {
+          backendMember = rtnData.member;
+        }
+        const token: string = rtnData.token || "";
+
+        const member = transformBackendMember(backendMember);
+
+        if (token) {
+          await apiClient.setAuthToken(token);
+        }
+        console.log("[AuthService] 註冊成功！");
+
+        return {
+          success: true,
+          data: {
+            member,
+            tokens: {
+              accessToken: token,
+              expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+            },
+          },
+        };
+      } else {
+        console.log("[AuthService] 後端回傳錯誤:", backendResponse.RTN_DATA);
+        return {
+          success: false,
+          error: {
+            code: "REGISTER_FAILED",
+            message: backendResponse.RTN_DATA || "註冊失敗",
+          },
+        };
+      }
     }
 
-    return response;
+    console.log(
+      "[AuthService] API 請求失敗:",
+      JSON.stringify(response.error, null, 2),
+    );
+    return {
+      success: false,
+      error: response.error || {
+        code: "UNKNOWN_ERROR",
+        message: "註冊時發生未知錯誤",
+      },
+    };
   }
 
   async logout(): Promise<void> {

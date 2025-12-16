@@ -172,6 +172,14 @@ Design documentation is located in the `/docs` folder:
 
 ## Recent Changes
 
+- **2025-12-16**: Updated phone input for Hong Kong region
+  - Changed "電話號碼" to "手機號碼" (Mobile Number)
+  - Phone input now accepts exactly 8 digits only (no +852 prefix)
+  - Added birthday field (required) to registration
+  - Made email field optional during registration
+  - Updated registration API to use `/ctlCRMAppAPI/register` endpoint
+  - Added cross-platform date picker for birthday selection
+  - Updated translations for all 3 languages
 - **2025-12-15**: Fixed logout and settings page issues
   - Fixed "Loading" stuck after logout - home screen now clears state when user logs out
   - Fixed "Unexpected text node" error in settings - changed conditional rendering from `&&` to ternary operators

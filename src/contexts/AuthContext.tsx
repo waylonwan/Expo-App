@@ -8,7 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (phone: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, name: string, phone?: string) => Promise<{ success: boolean; error?: string }>;
+  register: (phone: string, password: string, name: string, birthday: string, email?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshMember: () => Promise<void>;
 }
@@ -79,14 +79,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const register = async (
-    email: string, 
+    phone: string, 
     password: string, 
     name: string, 
-    phone?: string
+    birthday: string,
+    email?: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
       setIsLoading(true);
-      const response = await authService.register({ email, password, name, phone });
+      const response = await authService.register({ phone, password, name, birthday, email });
       
       if (response.success && response.data) {
         setMember(response.data.member);

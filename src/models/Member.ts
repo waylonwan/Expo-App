@@ -27,10 +27,11 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  email: string;
+  phone: string;
   password: string;
   name: string;
-  phone?: string;
+  birthday: string;
+  email?: string;
 }
 
 export interface LoginResponse {

@@ -18,7 +18,7 @@ export default function LoginScreen() {
   const handleLogin = useCallback(async () => {
     setError('');
     
-    if (!phone.trim()) {
+    if (!phone.trim() || phone.trim().length !== 8 || !/^\d{8}$/.test(phone.trim())) {
       setError(t('auth.invalidPhone'));
       return;
     }
@@ -67,11 +67,12 @@ export default function LoginScreen() {
           <Input
             label={t('auth.phone')}
             value={phone}
-            onChangeText={setPhone}
-            placeholder="+852 0000 0000"
-            keyboardType="phone-pad"
+            onChangeText={(text) => setPhone(text.replace(/\D/g, '').slice(0, 8))}
+            placeholder="12345678"
+            keyboardType="number-pad"
             autoCapitalize="none"
             autoCorrect={false}
+            maxLength={8}
             error={error && !phone.trim() ? t('auth.invalidPhone') : undefined}
           />
 

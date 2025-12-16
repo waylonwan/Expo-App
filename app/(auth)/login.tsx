@@ -49,13 +49,14 @@ export default function LoginScreen() {
     setIsLoading(false);
 
     if (result.success) {
-      // 使用 setTimeout 確保 LoadingOverlay 關閉後再導航
       setTimeout(() => {
         router.replace('/(tabs)');
       }, 100);
     } else {
-      setError(result.error || t('auth.loginFailed'));
-      Alert.alert(t('common.error'), result.error || t('auth.loginFailed'));
+      const errorMessage = result.error || t('auth.loginFailed');
+      console.log('[LoginScreen] 登入失敗，錯誤訊息:', errorMessage);
+      setError(errorMessage);
+      Alert.alert(t('common.error'), errorMessage);
     }
   }, [phone, password, login, t]);
 

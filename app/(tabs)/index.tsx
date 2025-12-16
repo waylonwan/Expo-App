@@ -20,55 +20,56 @@ export default function HomeScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // 載入首頁資料
-  const loadHomeData = useCallback(async (memberData: Member) => {
-    setIsLoading(true);
+  const loadHomeData = useCallback((memberData: Member) => {
+    console.log('[HomeScreen] loadHomeData called');
     setDisplayedMember(memberData);
     setError(null);
 
-    try {
-      // 優先使用 Member 中的積分資料（來自後端登入回應）
-      if (memberData.currentPoints !== undefined) {
-        const pointsFromMember: PointsBalance = {
-          currentPoints: memberData.currentPoints,
-          lifetimePoints: 0,
-          expiringPoints: memberData.expiringPoints || 0,
-          expiryDate: memberData.expiringDate,
-        };
-        setPointsBalance(pointsFromMember);
-      } else {
-        // 後端沒有積分資料，使用預設值
-        setPointsBalance({
-          currentPoints: 0,
-          lifetimePoints: 0,
-          expiringPoints: 0,
-          expiryDate: undefined,
-        });
-      }
-    } catch (err) {
-      setError(t('errors.networkError'));
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+    // 優先使用 Member 中的積分資料（來自後端登入回應）
+    if (memberData.currentPoints !== undefined) {
+      setPointsBalance({
+        currentPoints: memberData.currentPoints,
+        lifetimePoints: 0,
+        expiringPoints: memberData.expiringPoints || 0,
+        expiryDate: memberData.expiringDate,
+      });
+    } else {
+      // 後端沒有積分資料，使用預設值
+      setPointsBalance({
+        currentPoints: 0,
+        lifetimePoints: 0,
+        expiringPoints: 0,
+        expiryDate: undefined,
+      });
     }
-  }, [t]);
+    setDataLoaded(true);
+    setIsLoading(false);
+    setIsRefreshing(false);
+  }, []);
 
   useEffect(() => {
-    // 重置狀態
+    console.log('[HomeScreen] useEffect', { isAuthenticated, hasMember: !!member, dataLoaded });
+    
+    // 登出時重置狀態
     if (!isAuthenticated) {
       setIsLoading(false);
       setPointsBalance(null);
       setDisplayedMember(null);
       setError(null);
+      setDataLoaded(false);
       return;
     }
     
-    // 已登入且有會員資料時載入
-    if (member && isAuthenticated) {
+    // 已登入、有會員資料、且尚未載入時
+    if (member && isAuthenticated && !dataLoaded) {
+      console.log('[HomeScreen] Loading home data');
+      setIsLoading(true);
       loadHomeData(member);
     }
-  }, [member, isAuthenticated, loadHomeData]);
+  }, [member, isAuthenticated, dataLoaded, loadHomeData]);
 
   const handleRefresh = useCallback(() => {
     if (!isAuthenticated || !member) return;

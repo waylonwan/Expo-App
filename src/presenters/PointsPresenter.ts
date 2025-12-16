@@ -97,9 +97,13 @@ export class PointsPresenter {
   }
 
   formatDate(dateString: string): string {
-    // 後端格式: 2025.12.12 17:45
-    // 直接返回原始格式，已經是易讀的格式
-    return dateString;
+    // 後端格式: 2025-12-16 17:50:55.0
+    // 前端顯示: 2025.12.16 17:50
+    if (!dateString) return '';
+    const parts = dateString.split(' ');
+    const datePart = parts[0]?.replace(/-/g, '.') || '';
+    const timePart = parts[1]?.substring(0, 5) || '';
+    return `${datePart} ${timePart}`.trim();
   }
 
   getTransactionTypeKey(type: Transaction['type']): string {

@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 interface InputProps extends TextInputProps {
-  label?: string;
+  label?: string | React.ReactNode;
   error?: string;
   containerStyle?: ViewStyle;
   isPassword?: boolean;

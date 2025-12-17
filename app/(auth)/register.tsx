@@ -1,10 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Image, TouchableOpacity, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Image, TouchableOpacity, Modal, Text } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/ThemedText';
 import { Button, Input, LoadingOverlay, useAlert } from '@/src/components';
 import { useAuth } from '@/src/contexts';
+
+const RequiredLabel = ({ label }: { label: string }) => (
+  <Text>
+    {label}
+    <Text style={{ color: '#E31837' }}> *</Text>
+  </Text>
+);
 
 export default function RegisterScreen() {
   const { t } = useTranslation();
@@ -128,7 +135,7 @@ export default function RegisterScreen() {
 
         <View style={styles.form}>
           <Input
-            label={t('auth.name')}
+            label={<RequiredLabel label={t('auth.name')} />}
             value={name}
             onChangeText={setName}
             placeholder={t('auth.name')}
@@ -137,7 +144,7 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label={t('auth.phone')}
+            label={<RequiredLabel label={t('auth.phone')} />}
             value={phone}
             onChangeText={(text) => setPhone(text.replace(/\D/g, '').slice(0, 8))}
             placeholder="12345678"
@@ -160,7 +167,7 @@ export default function RegisterScreen() {
           </TouchableOpacity>
 
           <View style={styles.genderContainer}>
-            <ThemedText style={styles.genderLabel}>{t('auth.gender')}</ThemedText>
+            <ThemedText style={styles.genderLabel}>{t('auth.gender')}<Text style={styles.requiredMark}> *</Text></ThemedText>
             <View style={styles.genderOptions}>
               <TouchableOpacity
                 style={[
@@ -212,7 +219,7 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label={t('auth.password')}
+            label={<RequiredLabel label={t('auth.password')} />}
             value={password}
             onChangeText={setPassword}
             placeholder="******"
@@ -517,6 +524,10 @@ const styles = StyleSheet.create({
     color: '#EF4444',
     fontSize: 12,
     marginTop: 4,
+  },
+  requiredMark: {
+    color: '#E31837',
+    fontWeight: '600',
   },
   datePickerConfirmButton: {
     flex: 1,

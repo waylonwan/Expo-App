@@ -23,10 +23,14 @@ function NavigationHandler() {
 
     const inAuthGroup = (segments[0] as string) === '(auth)';
 
+    // 只有當用戶已登入且在 auth 頁面時才跳轉
+    // 登入失敗時不應觸發任何跳轉
     if (isAuthenticated && inAuthGroup) {
       router.replace('/(tabs)' as any);
     }
-  }, [isAuthenticated, segments, isLoading, navigationState?.key]);
+    // 注意：不要在這裡處理未登入的情況，讓用戶可以自由瀏覽 auth 頁面
+  }, [isAuthenticated, segments, navigationState?.key]);
+  // 移除 isLoading 依賴，避免 loading 狀態變化觸發不必要的導航
 
   return null;
 }

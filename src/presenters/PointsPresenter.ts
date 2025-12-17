@@ -116,6 +116,16 @@ export class PointsPresenter {
     return typeKeys[type];
   }
 
+  getTransactionTypeLabel(type: Transaction['type']): string {
+    const typeLabels: Record<Transaction['type'], string> = {
+      earn: 'points.storeConsumption',
+      redeem: 'points.couponRedeem',
+      expire: 'points.pointsExpired',
+      adjust: 'points.pointsAdjust',
+    };
+    return typeLabels[type];
+  }
+
   getTransactionColor(type: Transaction['type']): string {
     const colors: Record<Transaction['type'], string> = {
       earn: '#22C55E',

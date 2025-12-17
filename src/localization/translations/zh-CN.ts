@@ -71,6 +71,10 @@ export default {
     expire: '过期',
     adjust: '调整',
     noTransactions: '暂无交易记录',
+    storeConsumption: '门店消费',
+    couponRedeem: '优惠券兑换',
+    pointsExpired: '积分过期',
+    pointsAdjust: '积分调整',
   },
   coupons: {
     title: '优惠券',

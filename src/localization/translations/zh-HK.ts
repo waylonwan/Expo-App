@@ -71,6 +71,10 @@ export default {
     expire: '過期',
     adjust: '調整',
     noTransactions: '暫無交易記錄',
+    storeConsumption: '門市消費',
+    couponRedeem: '優惠券兌換',
+    pointsExpired: '積分過期',
+    pointsAdjust: '積分調整',
   },
   coupons: {
     title: '優惠券',

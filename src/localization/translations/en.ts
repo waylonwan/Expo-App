@@ -71,6 +71,10 @@ export default {
     expire: 'Expired',
     adjust: 'Adjusted',
     noTransactions: 'No transactions yet',
+    storeConsumption: 'Store Purchase',
+    couponRedeem: 'Coupon Redemption',
+    pointsExpired: 'Points Expired',
+    pointsAdjust: 'Points Adjustment',
   },
   coupons: {
     title: 'Coupons',

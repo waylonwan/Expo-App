@@ -98,7 +98,7 @@ export default function PointsScreen() {
         </View>
         <View style={styles.transactionInfo}>
           <ThemedText style={styles.transactionDescription}>
-            {item.description}
+            {t(presenter.getTransactionTypeLabel(item.type))}
           </ThemedText>
           <ThemedText style={styles.transactionDate}>
             {presenter.formatDate(item.date)}

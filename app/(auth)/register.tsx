@@ -90,7 +90,7 @@ export default function RegisterScreen() {
     if (result.success) {
       router.replace('/(tabs)');
     } else {
-      showAlert(t('common.error'), result.error || t('auth.registerFailed'));
+      showAlert(t('common.notice'), result.error || t('auth.registerFailed'));
     }
   }, [validateForm, phone, password, name, birthday, gender, email, register, t, showAlert]);
 

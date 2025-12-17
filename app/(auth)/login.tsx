@@ -39,7 +39,7 @@ export default function LoginScreen() {
       const errorMessage = result.error || t('auth.loginFailed');
       console.log('[LoginScreen] 登入失敗，錯誤訊息:', errorMessage);
       setError(errorMessage);
-      showAlert(t('common.error'), errorMessage);
+      showAlert(t('common.notice'), errorMessage);
     }
   }, [phone, password, login, t, showAlert]);
 

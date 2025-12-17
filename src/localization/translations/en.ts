@@ -2,6 +2,7 @@ export default {
   common: {
     loading: 'Loading...',
     error: 'Error',
+    notice: 'Notice',
     retry: 'Retry',
     cancel: 'Cancel',
     confirm: 'Confirm',

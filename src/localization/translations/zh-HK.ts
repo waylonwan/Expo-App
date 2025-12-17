@@ -2,6 +2,7 @@ export default {
   common: {
     loading: '載入中...',
     error: '錯誤',
+    notice: '提示',
     retry: '重試',
     cancel: '取消',
     confirm: '確認',

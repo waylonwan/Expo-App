@@ -2,7 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack, router, useSegments, useRootNavigationState } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import 'react-native-reanimated';
 import { I18nextProvider } from 'react-i18next';
@@ -17,20 +17,28 @@ function NavigationHandler() {
   const { isAuthenticated, isLoading } = useAuth();
   const segments = useSegments();
   const navigationState = useRootNavigationState();
+  const lastAuthState = useRef<boolean | null>(null);
 
   useEffect(() => {
-    if (!navigationState?.key || isLoading) return;
+    if (!navigationState?.key) return;
+
+    // 如果正在 loading，不做任何導航
+    if (isLoading) return;
 
     const inAuthGroup = (segments[0] as string) === '(auth)';
 
-    // 只有當用戶已登入且在 auth 頁面時才跳轉
-    // 登入失敗時不應觸發任何跳轉
-    if (isAuthenticated && inAuthGroup) {
+    // 只有當 isAuthenticated 從 false 變為 true 時才跳轉
+    // 這確保只有成功登入後才會導航，失敗時不會
+    const wasAuthenticated = lastAuthState.current;
+    const justLoggedIn = isAuthenticated && wasAuthenticated === false;
+
+    if (justLoggedIn && inAuthGroup) {
       router.replace('/(tabs)' as any);
     }
-    // 注意：不要在這裡處理未登入的情況，讓用戶可以自由瀏覽 auth 頁面
-  }, [isAuthenticated, segments, navigationState?.key]);
-  // 移除 isLoading 依賴，避免 loading 狀態變化觸發不必要的導航
+
+    // 更新上一次的認證狀態
+    lastAuthState.current = isAuthenticated;
+  }, [isAuthenticated, segments, navigationState?.key, isLoading]);
 
   return null;
 }

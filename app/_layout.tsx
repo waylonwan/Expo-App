@@ -1,45 +1,22 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, router, useSegments, useRootNavigationState } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import 'react-native-reanimated';
 import { I18nextProvider } from 'react-i18next';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AuthProvider, useAuth, LanguageProvider } from '@/src/contexts';
+import { AuthProvider, LanguageProvider } from '@/src/contexts';
 import { initializeI18n } from '@/src/localization';
 import i18n from '@/src/localization/i18n';
 import { AlertProvider } from '@/src/components';
 
 function NavigationHandler() {
-  const { isAuthenticated, isLoading } = useAuth();
-  const segments = useSegments();
-  const navigationState = useRootNavigationState();
-  const lastAuthState = useRef<boolean | null>(null);
-
-  useEffect(() => {
-    if (!navigationState?.key) return;
-
-    // 如果正在 loading，不做任何導航
-    if (isLoading) return;
-
-    const inAuthGroup = (segments[0] as string) === '(auth)';
-
-    // 只有當 isAuthenticated 從 false 變為 true 時才跳轉
-    // 這確保只有成功登入後才會導航，失敗時不會
-    const wasAuthenticated = lastAuthState.current;
-    const justLoggedIn = isAuthenticated && wasAuthenticated === false;
-
-    if (justLoggedIn && inAuthGroup) {
-      router.replace('/(tabs)' as any);
-    }
-
-    // 更新上一次的認證狀態
-    lastAuthState.current = isAuthenticated;
-  }, [isAuthenticated, segments, navigationState?.key, isLoading]);
-
+  // 導航邏輯已移至各個頁面自行處理
+  // 登入成功後由 login.tsx 負責導航
+  // 這裡不再做自動導航，避免競態條件導致的意外跳轉
   return null;
 }
 

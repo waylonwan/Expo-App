@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, Text } from 'react-native';
 import { router } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
@@ -12,6 +13,7 @@ import { PointsBalance, Transaction } from '@/src/models';
 export default function PointsScreen() {
   const { t } = useTranslation();
   const { isAuthenticated, isLoading: authLoading, member } = useAuth();
+  const isFocused = useIsFocused();
   const [pointsBalance, setPointsBalance] = useState<PointsBalance | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,10 +42,11 @@ export default function PointsScreen() {
   const presenter = useMemo(() => new PointsPresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
+    // 只在頁面可見且用戶未登入時才導航，避免在其他頁面時意外觸發
+    if (isFocused && !authLoading && !isAuthenticated) {
       router.replace('/(tabs)' as any);
     }
-  }, [isAuthenticated, authLoading]);
+  }, [isAuthenticated, authLoading, isFocused]);
 
   useEffect(() => {
     if (isAuthenticated && member) {

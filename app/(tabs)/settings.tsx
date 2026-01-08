@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal, Platform } from 'react-native';
 import { router } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
@@ -13,6 +14,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const { member, logout, isAuthenticated, isLoading: authLoading } = useAuth();
   const { currentLanguage, supportedLanguages } = useLanguage();
+  const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
@@ -73,10 +75,11 @@ export default function SettingsScreen() {
   const presenter = useMemo(() => new SettingsPresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
+    // 只在頁面可見且用戶未登入時才導航，避免在其他頁面時意外觸發
+    if (isFocused && !authLoading && !isAuthenticated) {
       router.replace('/(tabs)' as any);
     }
-  }, [isAuthenticated, authLoading]);
+  }, [isAuthenticated, authLoading, isFocused]);
 
   const handleLogout = useCallback(() => {
     presenter.onLogoutTapped();

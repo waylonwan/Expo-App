@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Alert, Modal } from 'react-native';
 import { router } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
@@ -12,6 +13,7 @@ import { Coupon, RedeemCouponResponse } from '@/src/models';
 export default function CouponsScreen() {
   const { t } = useTranslation();
   const { member, isAuthenticated, isLoading: authLoading } = useAuth();
+  const isFocused = useIsFocused();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -65,10 +67,11 @@ export default function CouponsScreen() {
   const presenter = useMemo(() => new CouponPresenter(callbacks), [callbacks]);
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
+    // 只在頁面可見且用戶未登入時才導航，避免在其他頁面時意外觸發
+    if (isFocused && !authLoading && !isAuthenticated) {
       router.replace('/(tabs)' as any);
     }
-  }, [isAuthenticated, authLoading]);
+  }, [isAuthenticated, authLoading, isFocused]);
 
   useEffect(() => {
     if (isAuthenticated) {
